@@ -1,0 +1,64 @@
+# Deep Learning Frameworks
+tensorflow>=2.20.0
+torch>=2.9.0
+keras>=3.0.0
+
+# Data Processing & Scientific Computing
+numpy>=2.2.0
+pandas>=2.2.0
+scikit-learn>=1.6.0
+imbalanced-learn>=0.12.0
+scipy>=1.11.0
+
+# Federated Learning & Cryptography
+pycryptodome>=3.19.0
+cryptography>=41.0.0
+
+# Networking & API
+flask>=3.0.0
+flask-cors>=4.0.0
+requests>=2.31.0
+websockets>=12.0
+aiohttp>=3.9.0
+
+# OpenRouter API Integration
+openai>=1.0.0  # For OpenAI-compatible API interface
+httpx>=0.25.0
+python-dotenv>=1.0.0
+
+# Monitoring & Visualization
+tensorboard>=2.20.0
+matplotlib>=3.8.0
+seaborn>=0.13.0
+plotly>=5.18.0
+tqdm>=4.66.0
+
+# Configuration & Utils
+pyyaml>=6.0.0
+jsonschema>=4.20.0
+python-dateutil>=2.8.0
+pytz>=2023.3
+
+# Testing
+pytest>=8.3.0
+pytest-asyncio>=0.23.0
+pytest-cov>=4.1.0
+
+# Logging & Monitoring
+colorlog>=6.8.0
+loguru>=0.7.0
+
+# Data Formats
+h5py>=3.10.0
+tables>=3.9.0
+
+# Advanced Feature Selection
+shap>=0.44.0  # SHapley Additive exPlanations
+xgboost>=2.0.0  # For SHAP and general ML
+lightgbm>=4.1.0  # Alternative to XGBoost
+sklearn-genetic-opt>=0.10.0  # Genetic Algorithm feature selection
+Boruta>=0.3  # Boruta all-relevant feature selection
+
+# Optional: For advanced visualizations
+networkx>=3.2.0
+graphviz>=0.20.0

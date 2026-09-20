@@ -1,0 +1,24 @@
+node:
+  id: "node-001"
+  name: "Local Development Node"
+  ip_address: "localhost"
+  port: 8080
+
+server:
+  aggregation_server_ip: "127.0.0.1"
+  aggregation_server_port: 8888
+
+training:
+  local_epochs: 5
+  batch_size: 32
+  learning_rate: 0.001
+  max_training_time: 3600
+
+data:
+  dataset_path: "./data"
+  train_split: 0.8
+  test_split: 0.2
+
+monitoring:
+  log_level: "INFO"
+  metrics_enabled: true

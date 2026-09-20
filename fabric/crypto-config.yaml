@@ -1,0 +1,13 @@
+OrdererOrgs:
+  - Name: Orderer
+    Domain: ddos.com
+    Specs:
+      - Hostname: orderer
+
+PeerOrgs:
+  - Name: FL
+    Domain: fl.ddos.com
+    Template:
+      Count: 3
+    Users:
+      Count: 1

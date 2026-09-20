@@ -1,0 +1,11 @@
+# Lightweight requirements for Mininet Simulation
+# (Avoids large GPU packages that cause I/O errors in WSL)
+
+numpy==1.26.2
+scikit-learn==1.5.1
+pandas==2.2.2
+pyyaml==6.0.1
+tensorflow-cpu==2.20.0
+httpx==0.27.0
+python-dotenv==1.0.1
+requests==2.32.3

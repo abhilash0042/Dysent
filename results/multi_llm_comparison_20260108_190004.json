@@ -1,0 +1,474 @@
+[
+  {
+    "model_id": "gpt-3.5-turbo",
+    "model_name": "GPT-3.5 Turbo",
+    "final_accuracy": 0.2267950475215912,
+    "final_loss": NaN,
+    "round_results": [
+      {
+        "round": 1,
+        "assessment": {
+          "threat_level": "low",
+          "action": "monitor",
+          "confidence": 0.9,
+          "reasoning": "The event shows no anomalies in the first round with all nodes having high trust average. However, continuous monitoring is recommended to detect any potential security threats in subsequent rounds."
+        },
+        "strategy": "fedavg",
+        "threat_level": "low"
+      },
+      {
+        "round": 2,
+        "assessment": {
+          "threat_level": "low",
+          "action": "monitor",
+          "confidence": 0.9,
+          "reasoning": "The event shows a low threat level with no anomalies reported, trust average is high, and only 5 nodes in round 2. Monitoring the system closely is recommended to ensure security."
+        },
+        "strategy": "fedavg",
+        "threat_level": "low"
+      },
+      {
+        "round": 3,
+        "assessment": {
+          "threat_level": "low",
+          "action": "monitor",
+          "confidence": 0.9,
+          "reasoning": "The event shows no anomalies in the third round of federated learning with all nodes having high trust levels. However, continuous monitoring is recommended to ensure ongoing security and prevent potential threats."
+        },
+        "strategy": "krum",
+        "threat_level": "low"
+      },
+      {
+        "round": 4,
+        "assessment": {
+          "threat_level": "low",
+          "action": "monitor",
+          "confidence": 0.9,
+          "reasoning": "The event shows a low threat level with no anomalies detected, trust average is high, and only 5 nodes in round 4. Monitoring the system closely is recommended to ensure continued security."
+        },
+        "strategy": "krum",
+        "threat_level": "low"
+      },
+      {
+        "round": 5,
+        "assessment": {
+          "threat_level": "low",
+          "action": "monitor",
+          "confidence": 0.9,
+          "reasoning": "The event shows no anomalies, all nodes are trusted, and it is in an early round. Monitoring the system closely is sufficient at this point."
+        },
+        "strategy": "fedavg",
+        "threat_level": "low"
+      },
+      {
+        "round": 6,
+        "assessment": {
+          "threat_level": "low",
+          "action": "monitor",
+          "confidence": 0.9,
+          "reasoning": "The event shows no anomalies, all nodes are trusted, and it is in round 6. However, continuous monitoring is recommended to ensure security throughout the federated learning process."
+        },
+        "strategy": "fedavg",
+        "threat_level": "low"
+      },
+      {
+        "round": 7,
+        "assessment": {
+          "threat_level": "low",
+          "action": "monitor",
+          "confidence": 0.9,
+          "reasoning": "The event shows that in round 7 of federated learning with 5 nodes, there were no anomalies and the trust average is 1.0. This indicates a stable and secure environment. However, continuous monitoring is still recommended to ensure ongoing security."
+        },
+        "strategy": "trimmed_mean",
+        "threat_level": "low"
+      },
+      {
+        "round": 8,
+        "assessment": {
+          "threat_level": "low",
+          "action": "monitor",
+          "confidence": 0.9,
+          "reasoning": "The event shows that in round 8 of the federated learning process with 5 nodes, there were no anomalies reported and the trust average is at 1.0. This indicates a stable and secure environment. However, continuous monitoring is still recommended to ensure ongoing security."
+        },
+        "strategy": "krum",
+        "threat_level": "low"
+      },
+      {
+        "round": 9,
+        "assessment": {
+          "threat_level": "low",
+          "action": "monitor",
+          "confidence": 0.9,
+          "reasoning": "The event shows a round with no anomalies and high trust average among nodes, indicating a low threat level. However, continuous monitoring is recommended to ensure ongoing security."
+        },
+        "strategy": "trimmed_mean",
+        "threat_level": "low"
+      },
+      {
+        "round": 10,
+        "assessment": {
+          "threat_level": "low",
+          "action": "monitor",
+          "confidence": 0.9,
+          "reasoning": "The event shows a round with no anomalies and high trust average, indicating a stable and secure federated learning process. However, continuous monitoring is still recommended to ensure ongoing security."
+        },
+        "strategy": "fedavg",
+        "threat_level": "low"
+      }
+    ]
+  },
+  {
+    "model_id": "gpt-4-turbo",
+    "model_name": "GPT-4 Turbo",
+    "final_accuracy": 0.2267950475215912,
+    "final_loss": NaN,
+    "round_results": [
+      {
+        "round": 1,
+        "assessment": {
+          "threat_level": "low",
+          "action": "monitor",
+          "confidence": 0.95,
+          "reasoning": "All nodes show full trust with no anomalies reported in the first round, indicating a stable and secure environment currently."
+        },
+        "strategy": "fedavg",
+        "threat_level": "low"
+      },
+      {
+        "round": 2,
+        "assessment": {
+          "threat_level": "low",
+          "action": "monitor",
+          "confidence": 0.95,
+          "reasoning": "The trust average is high and no anomalies were reported, indicating a stable and secure round."
+        },
+        "strategy": "fedavg",
+        "threat_level": "low"
+      },
+      {
+        "round": 3,
+        "assessment": {
+          "threat_level": "low",
+          "action": "monitor",
+          "confidence": 0.95,
+          "reasoning": "All nodes report full trust and no anomalies detected in the current round, indicating normal operation."
+        },
+        "strategy": "fedavg",
+        "threat_level": "low"
+      },
+      {
+        "round": 4,
+        "assessment": {
+          "threat_level": "low",
+          "action": "monitor",
+          "confidence": 0.95,
+          "reasoning": "All nodes show full trust with no anomalies reported, indicating a stable and secure round of federated learning."
+        },
+        "strategy": "fedavg",
+        "threat_level": "low"
+      },
+      {
+        "round": 5,
+        "assessment": {
+          "threat_level": "low",
+          "action": "monitor",
+          "confidence": 0.95,
+          "reasoning": "With a high trust average and no anomalies reported, the system appears secure in this round."
+        },
+        "strategy": "fedavg",
+        "threat_level": "low"
+      },
+      {
+        "round": 6,
+        "assessment": {
+          "threat_level": "low",
+          "action": "monitor",
+          "confidence": 0.95,
+          "reasoning": "The trust average is at a maximum and no anomalies were reported, indicating a healthy federated learning environment."
+        },
+        "strategy": "fedavg",
+        "threat_level": "low"
+      },
+      {
+        "round": 7,
+        "assessment": {
+          "threat_level": "low",
+          "action": "monitor",
+          "confidence": 0.95,
+          "reasoning": "The trust average is at maximum and there are no reported anomalies, suggesting a stable and secure round."
+        },
+        "strategy": "fedavg",
+        "threat_level": "low"
+      },
+      {
+        "round": 8,
+        "assessment": {
+          "threat_level": "low",
+          "action": "monitor",
+          "confidence": 0.95,
+          "reasoning": "With a high trust average and no anomalies reported across the nodes, the security risk appears minimal."
+        },
+        "strategy": "fedavg",
+        "threat_level": "low"
+      },
+      {
+        "round": 9,
+        "assessment": {
+          "threat_level": "low",
+          "action": "monitor",
+          "confidence": 0.95,
+          "reasoning": "The trust average is at maximum and there are no anomalies reported, indicating normal operation without apparent security issues."
+        },
+        "strategy": "fedavg",
+        "threat_level": "low"
+      },
+      {
+        "round": 10,
+        "assessment": {
+          "threat_level": "low",
+          "action": "monitor",
+          "confidence": 0.95,
+          "reasoning": "All nodes have a high trust average with no reported anomalies, indicating a stable and secure environment."
+        },
+        "strategy": "fedavg",
+        "threat_level": "low"
+      }
+    ]
+  },
+  {
+    "model_id": "anthropic/claude-3.5-sonnet",
+    "model_name": "Claude 3.5 Sonnet",
+    "final_accuracy": 0.2267950475215912,
+    "final_loss": NaN,
+    "round_results": [
+      {
+        "round": 1,
+        "assessment": {
+          "threat_level": "low",
+          "action": "monitor",
+          "confidence": 0.95,
+          "reasoning": "Normal training round with perfect trust scores across all nodes, no anomalies detected, and expected number of participating nodes indicates healthy system state"
+        },
+        "strategy": "fedavg",
+        "threat_level": "low"
+      },
+      {
+        "round": 2,
+        "assessment": {
+          "threat_level": "low",
+          "action": "monitor",
+          "confidence": 0.95,
+          "reasoning": "Normal FL round with perfect trust scores across all nodes, no anomalies detected, small node count enables good oversight"
+        },
+        "strategy": "fedavg",
+        "threat_level": "low"
+      },
+      {
+        "round": 3,
+        "assessment": {
+          "threat_level": "low",
+          "action": "monitor",
+          "confidence": 0.95,
+          "reasoning": "Normal FL round with perfect trust scores across all 5 nodes and no detected anomalies indicates healthy system operation"
+        },
+        "strategy": "fedavg",
+        "threat_level": "low"
+      },
+      {
+        "round": 4,
+        "assessment": {
+          "threat_level": "low",
+          "action": "monitor",
+          "confidence": 0.95,
+          "reasoning": "Normal FL round with perfect trust scores across all 5 nodes and no detected anomalies indicates healthy system operation"
+        },
+        "strategy": "fedavg",
+        "threat_level": "low"
+      },
+      {
+        "round": 5,
+        "assessment": {
+          "threat_level": "low",
+          "action": "monitor",
+          "confidence": 0.95,
+          "reasoning": "All metrics indicate normal operation - perfect trust score, no anomalies detected, reasonable number of nodes and rounds. System appears to be functioning as expected."
+        },
+        "strategy": "fedavg",
+        "threat_level": "low"
+      },
+      {
+        "round": 6,
+        "assessment": {
+          "threat_level": "low",
+          "action": "monitor",
+          "confidence": 0.95,
+          "reasoning": "Normal FL round with perfect trust scores across all 5 nodes and no detected anomalies indicates healthy system operation"
+        },
+        "strategy": "fedavg",
+        "threat_level": "low"
+      },
+      {
+        "round": 7,
+        "assessment": {
+          "threat_level": "low",
+          "action": "monitor",
+          "confidence": 0.95,
+          "reasoning": "All metrics indicate normal operation - perfect trust score, no anomalies detected, reasonable number of nodes and training round. System appears stable and secure."
+        },
+        "strategy": "fedavg",
+        "threat_level": "low"
+      },
+      {
+        "round": 8,
+        "assessment": {
+          "threat_level": "low",
+          "action": "monitor",
+          "confidence": 0.95,
+          "reasoning": "Normal FL round with perfect trust scores across all nodes, no anomalies detected, and healthy node participation level indicates standard operation"
+        },
+        "strategy": "fedavg",
+        "threat_level": "low"
+      },
+      {
+        "round": 9,
+        "assessment": {
+          "threat_level": "low",
+          "action": "monitor",
+          "confidence": 0.95,
+          "reasoning": "Normal FL operation detected - perfect trust scores across nodes, no anomalies reported, and healthy node participation in round 9"
+        },
+        "strategy": "fedavg",
+        "threat_level": "low"
+      },
+      {
+        "round": 10,
+        "assessment": {
+          "threat_level": "low",
+          "action": "monitor",
+          "confidence": 0.95,
+          "reasoning": "Normal FL round with perfect trust scores across nodes, no anomalies detected, system operating within expected parameters"
+        },
+        "strategy": "fedavg",
+        "threat_level": "low"
+      }
+    ]
+  },
+  {
+    "model_id": "perplexity/llama-3.1-sonar-large-128k-online",
+    "model_name": "Perplexity Sonar Large",
+    "final_accuracy": 0.9880536794662476,
+    "final_loss": 0.035547755658626556,
+    "round_results": [
+      {
+        "round": 1,
+        "assessment": {
+          "threat_level": "medium",
+          "action": "monitor",
+          "confidence": 0.75,
+          "reasoning": "Detected moderate activity patterns"
+        },
+        "strategy": "trimmed_mean",
+        "threat_level": "medium"
+      },
+      {
+        "round": 2,
+        "assessment": {
+          "threat_level": "medium",
+          "action": "monitor",
+          "confidence": 0.75,
+          "reasoning": "Detected moderate activity patterns"
+        },
+        "strategy": "trimmed_mean",
+        "threat_level": "medium"
+      },
+      {
+        "round": 3,
+        "assessment": {
+          "threat_level": "medium",
+          "action": "monitor",
+          "confidence": 0.75,
+          "reasoning": "Detected moderate activity patterns"
+        },
+        "strategy": "trimmed_mean",
+        "threat_level": "medium"
+      },
+      {
+        "round": 4,
+        "assessment": {
+          "threat_level": "medium",
+          "action": "monitor",
+          "confidence": 0.75,
+          "reasoning": "Detected moderate activity patterns"
+        },
+        "strategy": "trimmed_mean",
+        "threat_level": "medium"
+      },
+      {
+        "round": 5,
+        "assessment": {
+          "threat_level": "medium",
+          "action": "monitor",
+          "confidence": 0.75,
+          "reasoning": "Detected moderate activity patterns"
+        },
+        "strategy": "trimmed_mean",
+        "threat_level": "medium"
+      },
+      {
+        "round": 6,
+        "assessment": {
+          "threat_level": "medium",
+          "action": "monitor",
+          "confidence": 0.75,
+          "reasoning": "Detected moderate activity patterns"
+        },
+        "strategy": "trimmed_mean",
+        "threat_level": "medium"
+      },
+      {
+        "round": 7,
+        "assessment": {
+          "threat_level": "medium",
+          "action": "monitor",
+          "confidence": 0.75,
+          "reasoning": "Detected moderate activity patterns"
+        },
+        "strategy": "trimmed_mean",
+        "threat_level": "medium"
+      },
+      {
+        "round": 8,
+        "assessment": {
+          "threat_level": "medium",
+          "action": "monitor",
+          "confidence": 0.75,
+          "reasoning": "Detected moderate activity patterns"
+        },
+        "strategy": "trimmed_mean",
+        "threat_level": "medium"
+      },
+      {
+        "round": 9,
+        "assessment": {
+          "threat_level": "medium",
+          "action": "monitor",
+          "confidence": 0.75,
+          "reasoning": "Detected moderate activity patterns"
+        },
+        "strategy": "trimmed_mean",
+        "threat_level": "medium"
+      },
+      {
+        "round": 10,
+        "assessment": {
+          "threat_level": "medium",
+          "action": "monitor",
+          "confidence": 0.75,
+          "reasoning": "Detected moderate activity patterns"
+        },
+        "strategy": "trimmed_mean",
+        "threat_level": "medium"
+      }
+    ]
+  }
+]

@@ -1,0 +1,19 @@
+{
+  "cic_baseline": {
+    "train_dataset": "CICDDoS2019",
+    "test_dataset": "CICDDoS2019",
+    "same_dataset_accuracy": 0.9908999800682068,
+    "cross_dataset_accuracy": 0.9889809489250183,
+    "num_rounds": 15,
+    "num_nodes": 5
+  },
+  "unsw_baseline": {
+    "train_dataset": "UNSW-NB15",
+    "test_dataset": "UNSW-NB15",
+    "same_dataset_accuracy": 0.8629999756813049,
+    "cross_dataset_accuracy": 0.8549333214759827,
+    "num_rounds": 15,
+    "num_nodes": 5
+  },
+  "note": "Different feature spaces prevent direct cross-dataset testing. Each dataset validated independently."
+}

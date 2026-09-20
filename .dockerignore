@@ -1,0 +1,69 @@
+# Ignore git and version control
+.git
+.gitignore
+*.md
+!requirements.txt
+
+# Ignore development files
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info
+dist
+build
+
+# Ignore IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Ignore logs and temporary files
+*.log
+logs/
+*.tmp
+
+# Ignore test output
+.pytest_cache
+.coverage
+htmlcov/
+.tox/
+
+# Ignore data (will be mounted as volumes)
+data/raw
+data/processed
+results/
+checkpoints/
+
+# Ignore Fabric binaries and samples (already in fabric/)
+fabric-samples/
+fabric/bin/
+fabric/config/
+
+# Ignore virtual environments
+venv/
+env/
+.env.local
+
+# Ignore WSL-specific
+*.wslconfig
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore large model files (will be mounted)
+*.h5
+*.keras
+*.pb
+*.pt
+*.pth
+
+# Keep necessary files
+!models/
+models/.gitkeep

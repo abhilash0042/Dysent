@@ -1,0 +1,141 @@
+# Git ignore file for FL DDoS Detection project
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+.venv/
+.venv-wsl/
+venv/
+ENV/
+env/
+
+# TensorFlow / ML
+*.h5
+*.hdf5
+*.pb
+checkpoints/
+fl_checkpoints/
+model_checkpoints/
+*.ckpt
+*.ckpt.*
+*.index
+*.meta
+*.data-*
+
+# Dataset files (too large for git)
+*.csv
+*.parquet
+*.feather
+datasets/
+data/
+
+# Logs
+*.log
+logs/
+*.out
+*.err
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+*.ipynb
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment variables
+.env
+.env.local
+*.key
+*.pem
+
+# Blockchain
+fabric/crypto-config/
+fabric/channel-artifacts/
+fabric/*.tar.gz
+fabric/*.block
+fabric/.hfc-*/
+
+# Go vendor directories (dependencies)
+vendor/
+*/vendor/
+**/vendor/
+
+# Docker
+docker-compose.override.yml
+
+# Test coverage
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+
+# Documentation builds
+docs/_build/
+site/
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~
+.DS_Store
+Thumbs.db
+
+# Windows
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Sensitive data
+secrets/
+private/
+*.secret
+api_keys.txt
+credentials.json
+
+# Large files
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# Project specific
+Results.txt
+activation.txt
+*.old
+*.backup
+
+# Pipeline runtime outputs
+results/unified_pipeline/live_status.json
+results/unified_pipeline/live_ledger.json
+results/unified_pipeline/*.json

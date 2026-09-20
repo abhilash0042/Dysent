@@ -1,0 +1,156 @@
+Organizations:
+  - &OrdererOrg
+      Name: OrdererOrg
+      ID: OrdererMSP
+      MSPDir: crypto-config/ordererOrganizations/fl-ddos.com/msp
+      Policies:
+        Readers:
+          Type: Signature
+          Rule: "OR('OrdererMSP.member')"
+        Writers:
+          Type: Signature
+          Rule: "OR('OrdererMSP.member')"
+        Admins:
+          Type: Signature
+          Rule: "OR('OrdererMSP.admin')"
+
+  - &Client1
+      Name: Client1MSP
+      ID: Client1MSP
+      MSPDir: crypto-config/peerOrganizations/client1.fl-ddos.com/msp
+      Policies:
+        Readers:
+          Type: Signature
+          Rule: "OR('Client1MSP.admin', 'Client1MSP.peer', 'Client1MSP.client')"
+        Writers:
+          Type: Signature
+          Rule: "OR('Client1MSP.admin', 'Client1MSP.client')"
+        Admins:
+          Type: Signature
+          Rule: "OR('Client1MSP.admin')"
+      AnchorPeers:
+        - Host: peer0.client1.fl-ddos.com
+          Port: 7051
+
+  - &Client2
+      Name: Client2MSP
+      ID: Client2MSP
+      MSPDir: crypto-config/peerOrganizations/client2.fl-ddos.com/msp
+      Policies:
+        Readers:
+          Type: Signature
+          Rule: "OR('Client2MSP.admin', 'Client2MSP.peer', 'Client2MSP.client')"
+        Writers:
+          Type: Signature
+          Rule: "OR('Client2MSP.admin', 'Client2MSP.client')"
+        Admins:
+          Type: Signature
+          Rule: "OR('Client2MSP.admin')"
+      AnchorPeers:
+        - Host: peer0.client2.fl-ddos.com
+          Port: 8051
+
+  - &Client3
+      Name: Client3MSP
+      ID: Client3MSP
+      MSPDir: crypto-config/peerOrganizations/client3.fl-ddos.com/msp
+      Policies:
+        Readers:
+          Type: Signature
+          Rule: "OR('Client3MSP.admin', 'Client3MSP.peer', 'Client3MSP.client')"
+        Writers:
+          Type: Signature
+          Rule: "OR('Client3MSP.admin', 'Client3MSP.client')"
+        Admins:
+          Type: Signature
+          Rule: "OR('Client3MSP.admin')"
+      AnchorPeers:
+        - Host: peer0.client3.fl-ddos.com
+          Port: 9051
+
+Capabilities:
+  Channel: &ChannelCapabilities
+    V2_0: true
+  Orderer: &OrdererCapabilities
+    V2_0: true
+  Application: &ApplicationCapabilities
+    V2_0: true
+
+Application: &ApplicationDefaults
+  Organizations:
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+  Capabilities:
+    <<: *ApplicationCapabilities
+
+Orderer: &OrdererDefaults
+  OrdererType: solo
+  Addresses:
+    - orderer.fl-ddos.com:7050
+  BatchTimeout: 2s
+  BatchSize:
+    MaxMessageCount: 10
+    AbsoluteMaxBytes: 99 MB
+    PreferredMaxBytes: 512 KB
+  Organizations:
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+    BlockValidation:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+  Capabilities:
+    <<: *OrdererCapabilities
+
+Channel: &ChannelDefaults
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+  Capabilities:
+    <<: *ChannelCapabilities
+
+Profiles:
+  FLOrdererGenesis:
+    <<: *ChannelDefaults
+    Orderer:
+      <<: *OrdererDefaults
+      Organizations:
+        - *OrdererOrg
+    Consortiums:
+      FLConsortium:
+        Organizations:
+          - *Client1
+          - *Client2
+          - *Client3
+
+  FLChannel:
+    Consortium: FLConsortium
+    <<: *ChannelDefaults
+    Application:
+      <<: *ApplicationDefaults
+      Organizations:
+        - *Client1
+        - *Client2
+        - *Client3

@@ -1,0 +1,161 @@
+{
+  "final_accuracy": 0.9893209338188171,
+  "final_loss": 0.02983921393752098,
+  "blockchain_valid": true,
+  "blockchain_summary": {
+    "total_blocks": 76,
+    "is_valid": true,
+    "genesis_hash": "99b931afe74ae4ae1d4ee50bb5a654e8eaedccc2e8f3586792836782222d9004",
+    "latest_hash": "5e0d3f7d00c968d1634765a015132113e9d7629a9baaa908f6dcc8136609cddd",
+    "block_types": {
+      "node_registration": 5,
+      "fl_round_start": 10,
+      "fl_round": 50,
+      "fl_round_complete": 10
+    },
+    "first_timestamp": "2026-01-10T20:08:58.544086",
+    "last_timestamp": "2026-01-10T20:47:21.581819"
+  },
+  "audit_report": {
+    "period": {
+      "start": "genesis",
+      "end": "now"
+    },
+    "blockchain_valid": true,
+    "total_events": 75,
+    "events_by_type": {
+      "node_registration": 5,
+      "fl_round_start": 10,
+      "fl_round": 50,
+      "fl_round_complete": 10
+    },
+    "fl_rounds": [
+      {
+        "type": "fl_round_complete",
+        "round_number": 1,
+        "global_model_hash": "b2de7fcebfcc311b",
+        "metrics": {
+          "accuracy": 0.9757982492446899,
+          "loss": 0.07137419283390045,
+          "validated_nodes": 5
+        },
+        "timestamp": 1768056142.9908464
+      },
+      {
+        "type": "fl_round_complete",
+        "round_number": 2,
+        "global_model_hash": "2e286efcf9238653",
+        "metrics": {
+          "accuracy": 0.9807745814323425,
+          "loss": 0.06050753965973854,
+          "validated_nodes": 5
+        },
+        "timestamp": 1768056371.0139709
+      },
+      {
+        "type": "fl_round_complete",
+        "round_number": 3,
+        "global_model_hash": "5babae2a2da0d342",
+        "metrics": {
+          "accuracy": 0.985951840877533,
+          "loss": 0.046112820506095886,
+          "validated_nodes": 5
+        },
+        "timestamp": 1768056597.7935212
+      },
+      {
+        "type": "fl_round_complete",
+        "round_number": 4,
+        "global_model_hash": "91d6ccd09ab1302e",
+        "metrics": {
+          "accuracy": 0.9860290884971619,
+          "loss": 0.04334862902760506,
+          "validated_nodes": 5
+        },
+        "timestamp": 1768056837.0696023
+      },
+      {
+        "type": "fl_round_complete",
+        "round_number": 5,
+        "global_model_hash": "fe25d47d96be8047",
+        "metrics": {
+          "accuracy": 0.9862300157546997,
+          "loss": 0.04204339534044266,
+          "validated_nodes": 5
+        },
+        "timestamp": 1768057065.825781
+      },
+      {
+        "type": "fl_round_complete",
+        "round_number": 6,
+        "global_model_hash": "249a7b0885567a1b",
+        "metrics": {
+          "accuracy": 0.9867863655090332,
+          "loss": 0.03932309150695801,
+          "validated_nodes": 5
+        },
+        "timestamp": 1768057290.0376332
+      },
+      {
+        "type": "fl_round_complete",
+        "round_number": 7,
+        "global_model_hash": "5b7432c0f401cee5",
+        "metrics": {
+          "accuracy": 0.9878836870193481,
+          "loss": 0.03495556116104126,
+          "validated_nodes": 5
+        },
+        "timestamp": 1768057530.0957525
+      },
+      {
+        "type": "fl_round_complete",
+        "round_number": 8,
+        "global_model_hash": "a8c6a3cc8c927d27",
+        "metrics": {
+          "accuracy": 0.9876673221588135,
+          "loss": 0.03427208587527275,
+          "validated_nodes": 5
+        },
+        "timestamp": 1768057770.6001103
+      },
+      {
+        "type": "fl_round_complete",
+        "round_number": 9,
+        "global_model_hash": "d42803223c88aea1",
+        "metrics": {
+          "accuracy": 0.988223671913147,
+          "loss": 0.03370608761906624,
+          "validated_nodes": 5
+        },
+        "timestamp": 1768057990.7129595
+      },
+      {
+        "type": "fl_round_complete",
+        "round_number": 10,
+        "global_model_hash": "6463d2d044607ad5",
+        "metrics": {
+          "accuracy": 0.9893209338188171,
+          "loss": 0.02983921393752098,
+          "validated_nodes": 5
+        },
+        "timestamp": 1768058241.581816
+      }
+    ],
+    "security_events": [],
+    "trust_updates": [],
+    "quarantines": []
+  },
+  "round_accuracies": [
+    0.9757982492446899,
+    0.9807745814323425,
+    0.985951840877533,
+    0.9860290884971619,
+    0.9862300157546997,
+    0.9867863655090332,
+    0.9878836870193481,
+    0.9876673221588135,
+    0.988223671913147,
+    0.9893209338188171
+  ],
+  "timestamp": "20260110_204728"
+}

@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FL-DDoS Pipeline Dashboard</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #111827;
+            --bg-card: rgba(17, 24, 39, 0.7);
+            --bg-glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.06);
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent-blue: #3b82f6;
+            --accent-cyan: #06b6d4;
+            --accent-purple: #8b5cf6;
+            --accent-green: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-red: #ef4444;
+            --accent-pink: #ec4899;
+            --glow-blue: rgba(59, 130, 246, 0.15);
+            --glow-green: rgba(16, 185, 129, 0.15);
+            --glow-purple: rgba(139, 92, 246, 0.15);
+            --glow-amber: rgba(245, 158, 11, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(ellipse at 20% 20%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(139, 92, 246, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(6, 182, 212, 0.04) 0%, transparent 50%);
+            z-index: 0;
+            animation: bgPulse 8s ease-in-out infinite alternate;
+        }
+
+        @keyframes bgPulse {
+            0% {
+                opacity: 0.7;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 20px 24px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 30px 0 20px;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.02em;
+            margin-bottom: 6px;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            font-weight: 400;
+        }
+
+        .header-badges {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 14px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            border: 1px solid;
+        }
+
+        .badge-blue {
+            background: rgba(59, 130, 246, 0.12);
+            color: #60a5fa;
+            border-color: rgba(59, 130, 246, 0.25);
+        }
+
+        .badge-green {
+            background: rgba(16, 185, 129, 0.12);
+            color: #34d399;
+            border-color: rgba(16, 185, 129, 0.25);
+        }
+
+        .badge-purple {
+            background: rgba(139, 92, 246, 0.12);
+            color: #a78bfa;
+            border-color: rgba(139, 92, 246, 0.25);
+        }
+
+        .badge-amber {
+            background: rgba(245, 158, 11, 0.12);
+            color: #fbbf24;
+            border-color: rgba(245, 158, 11, 0.25);
+        }
+
+        /* Pipeline Flow */
+        .pipeline-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            margin: 24px 0 30px;
+            flex-wrap: wrap;
+        }
+
+        .pipeline-stage {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 16px 20px;
+            border-radius: 14px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            backdrop-filter: blur(12px);
+            min-width: 155px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .pipeline-stage:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .pipeline-stage.active {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 20px var(--glow-blue);
+        }
+
+        .pipeline-stage .icon {
+            font-size: 1.6rem;
+        }
+
+        .pipeline-stage .label {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .pipeline-stage .sublabel {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+        }
+
+        .pipeline-arrow {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            margin: 0 6px;
+            animation: arrowPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes arrowPulse {
+
+            0%,
+            100% {
+                opacity: 0.3;
+                transform: translateX(0);
+            }
+
+            50% {
+                opacity: 1;
+                transform: translateX(3px);
+            }
+        }
+
+        /* Metric Cards */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .metric-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px 20px;
+            backdrop-filter: blur(12px);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            border-color: rgba(255, 255, 255, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+        }
+
+        .metric-card.blue::before {
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan));
+        }
+
+        .metric-card.green::before {
+            background: linear-gradient(90deg, var(--accent-green), #34d399);
+        }
+
+        .metric-card.purple::before {
+            background: linear-gradient(90deg, var(--accent-purple), var(--accent-pink));
+        }
+
+        .metric-card.amber::before {
+            background: linear-gradient(90deg, var(--accent-amber), #f97316);
+        }
+
+        .metric-label {
+            font-size: 0.72rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 6px;
+        }
+
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .metric-value.blue {
+            color: var(--accent-blue);
+        }
+
+        .metric-value.green {
+            color: var(--accent-green);
+        }
+
+        .metric-value.purple {
+            color: var(--accent-purple);
+        }
+
+        .metric-value.amber {
+            color: var(--accent-amber);
+        }
+
+        .metric-sub {
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+        }
+
+        /* Section panels */
+        .section-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-bottom: 18px;
+        }
+
+        .section-grid.three {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+
+        .panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px;
+            backdrop-filter: blur(12px);
+            overflow: hidden;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .panel-header .icon {
+            font-size: 1.2rem;
+        }
+
+        .panel-header h3 {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .panel-header .tag {
+            margin-left: auto;
+            padding: 2px 10px;
+            border-radius: 10px;
+            font-size: 0.65rem;
+            font-weight: 600;
+        }
+
+        /* Trust Scores */
+        .trust-node {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .trust-node:last-child {
+            border-bottom: none;
+        }
+
+        .trust-node .name {
+            font-size: 0.78rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            min-width: 80px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .trust-bar-bg {
+            flex: 1;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .trust-bar {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .trust-bar.high {
+            background: linear-gradient(90deg, #10b981, #34d399);
+        }
+
+        .trust-bar.medium {
+            background: linear-gradient(90deg, #f59e0b, #fbbf24);
+        }
+
+        .trust-bar.low {
+            background: linear-gradient(90deg, #ef4444, #f87171);
+        }
+
+        .trust-node .score {
+            font-size: 0.78rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            min-width: 45px;
+            text-align: right;
+        }
+
+        .trust-node .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .status-dot.active {
+            background: var(--accent-green);
+            box-shadow: 0 0 6px var(--accent-green);
+        }
+
+        .status-dot.warning {
+            background: var(--accent-amber);
+            box-shadow: 0 0 6px var(--accent-amber);
+        }
+
+        .status-dot.quarantined {
+            background: var(--accent-red);
+            box-shadow: 0 0 6px var(--accent-red);
+        }
+
+        /* Agent cards */
+        .agent-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .agent-card {
+            padding: 12px 14px;
+            border-radius: 10px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .agent-card:hover {
+            border-color: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .agent-card .agent-name {
+            font-size: 0.72rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .agent-card .agent-action {
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .agent-card .agent-result {
+            margin-top: 6px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        /* Blockchain log */
+        .tx-log {
+            max-height: 320px;
+            overflow-y: auto;
+        }
+
+        .tx-log::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .tx-log::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+        }
+
+        .tx-entry {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tx-entry:last-child {
+            border-bottom: none;
+        }
+
+        .tx-hash {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.68rem;
+            color: var(--accent-cyan);
+            min-width: 100px;
+        }
+
+        .tx-type {
+            font-size: 0.65rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 6px;
+            min-width: 75px;
+            text-align: center;
+        }
+
+        .tx-type.round {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+        }
+
+        .tx-type.trust {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+        }
+
+        .tx-type.agent {
+            background: rgba(139, 92, 246, 0.15);
+            color: #a78bfa;
+        }
+
+        .tx-details {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            flex: 1;
+        }
+
+        .tx-time {
+            font-size: 0.62rem;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Chart container */
+        .chart-container {
+            position: relative;
+            height: 220px;
+        }
+
+        /* Network topology */
+        .topology-svg {
+            width: 100%;
+            height: 300px;
+        }
+
+        /* Peer cards */
+        .peer-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .peer-card {
+            padding: 10px 12px;
+            border-radius: 10px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .peer-card .peer-icon {
+            font-size: 1.4rem;
+            margin-bottom: 4px;
+        }
+
+        .peer-card .peer-name {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .peer-card .peer-status {
+            font-size: 0.62rem;
+            font-weight: 600;
+            color: var(--accent-green);
+        }
+
+        .peer-card .peer-port {
+            font-size: 0.62rem;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Round timeline */
+        .timeline {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            padding: 10px 0;
+            overflow-x: auto;
+        }
+
+        .timeline-dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.68rem;
+            font-weight: 700;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .timeline-dot.complete {
+            background: linear-gradient(135deg, var(--accent-green), #34d399);
+            color: #0a0e1a;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+        }
+
+        .timeline-dot.current {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+            color: white;
+            box-shadow: 0 0 16px rgba(59, 130, 246, 0.4);
+            animation: pulseDot 2s ease infinite;
+        }
+
+        .timeline-dot.pending {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @keyframes pulseDot {
+
+            0%,
+            100% {
+                box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+            }
+
+            50% {
+                box-shadow: 0 0 20px rgba(59, 130, 246, 0.6);
+            }
+        }
+
+        .timeline-line {
+            height: 2px;
+            width: 30px;
+            flex-shrink: 0;
+        }
+
+        .timeline-line.complete {
+            background: linear-gradient(90deg, var(--accent-green), var(--accent-green));
+        }
+
+        .timeline-line.pending {
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        /* Animated data flow */
+        .data-particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--accent-cyan);
+            box-shadow: 0 0 6px var(--accent-cyan);
+            animation: flowParticle 3s linear infinite;
+        }
+
+        @keyframes flowParticle {
+            0% {
+                left: 0;
+                opacity: 0;
+            }
+
+            20% {
+                opacity: 1;
+            }
+
+            80% {
+                opacity: 1;
+            }
+
+            100% {
+                left: 100%;
+                opacity: 0;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 1100px) {
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .section-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section-grid.three {
+                grid-template-columns: 1fr;
+            }
+
+            .peer-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pipeline-flow {
+                flex-direction: column;
+            }
+
+            .pipeline-arrow {
+                transform: rotate(90deg);
+            }
+        }
+
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 3px 12px;
+            border-radius: 14px;
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #34d399;
+            margin-left: 12px;
+        }
+
+        .live-dot {
+            width: 6px;
+            height: 6px;
+            background: #34d399;
+            border-radius: 50%;
+            animation: livePulse 1.5s ease infinite;
+        }
+
+        @keyframes livePulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.4;
+                transform: scale(0.7);
+            }
+        }
+
+        .footer {
+            text-align: center;
+            padding: 28px 0 16px;
+            color: var(--text-muted);
+            font-size: 0.72rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🛡️ FL-DDoS Detection Pipeline</h1>
+            <p>Federated Learning × Zero Trust × Multi-Agent AI × Blockchain</p>
+            <div class="header-badges">
+                <span class="badge badge-blue">CNN-BiLSTM</span>
+                <span class="badge badge-green">Hyperledger Fabric</span>
+                <span class="badge badge-purple">4 AI Agents</span>
+                <span class="badge badge-amber">CIC-DDoS2019 (30GB)</span>
+            </div>
+        </div>
+
+        <!-- Pipeline Flow -->
+        <div class="pipeline-flow" id="pipelineFlow">
+            <div class="pipeline-stage active" data-stage="capture" onclick="highlightStage(this)">
+                <span class="icon">📡</span>
+                <span class="label">Data Capture</span>
+                <span class="sublabel">Live Traffic / CIC-DDoS2019</span>
+            </div>
+            <span class="pipeline-arrow">→</span>
+            <div class="pipeline-stage" data-stage="fl" onclick="highlightStage(this)">
+                <span class="icon">🔄</span>
+                <span class="label">Federated Learning</span>
+                <span class="sublabel">CNN-BiLSTM · 7 Nodes</span>
+            </div>
+            <span class="pipeline-arrow">→</span>
+            <div class="pipeline-stage" data-stage="trust" onclick="highlightStage(this)">
+                <span class="icon">🛡️</span>
+                <span class="label">Zero Trust</span>
+                <span class="sublabel">Anomaly · Trust Scores</span>
+            </div>
+            <span class="pipeline-arrow">→</span>
+            <div class="pipeline-stage" data-stage="agents" onclick="highlightStage(this)">
+                <span class="icon">🤖</span>
+                <span class="label">Multi-Agent AI</span>
+                <span class="sublabel">4 LLM Agents</span>
+            </div>
+            <span class="pipeline-arrow">→</span>
+            <div class="pipeline-stage" data-stage="blockchain" onclick="highlightStage(this)">
+                <span class="icon">⛓️</span>
+                <span class="label">Blockchain</span>
+                <span class="sublabel">Fabric · 3 Peers</span>
+            </div>
+        </div>
+
+        <!-- KPI Metric Cards -->
+        <div class="metrics-grid">
+            <div class="metric-card blue">
+                <div class="metric-label">Global Model Accuracy</div>
+                <div class="metric-value blue" id="metricAccuracy">94.42%</div>
+                <div class="metric-sub">CNN-BiLSTM on CIC-DDoS2019</div>
+            </div>
+            <div class="metric-card green">
+                <div class="metric-label">Trusted Nodes</div>
+                <div class="metric-value green" id="metricTrusted">7 / 7</div>
+                <div class="metric-sub">Zero nodes quarantined</div>
+            </div>
+            <div class="metric-card purple">
+                <div class="metric-label">Agent Decisions</div>
+                <div class="metric-value purple" id="metricDecisions">10</div>
+                <div class="metric-sub">4 agents per round</div>
+            </div>
+            <div class="metric-card amber">
+                <div class="metric-label">Blockchain TXs</div>
+                <div class="metric-value amber" id="metricTxs">30</div>
+                <div class="metric-sub">Immutable audit trail</div>
+            </div>
+        </div>
+
+        <!-- Round Timeline -->
+        <div class="panel" style="margin-bottom: 18px;">
+            <div class="panel-header">
+                <span class="icon">⏱️</span>
+                <h3>Training Rounds</h3>
+                <span class="live-indicator"><span class="live-dot"></span> COMPLETE</span>
+            </div>
+            <div class="timeline" id="roundTimeline"></div>
+        </div>
+
+        <!-- Row 1: Accuracy Chart + Trust Scores -->
+        <div class="section-grid">
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="icon">📈</span>
+                    <h3>Training Accuracy Over Rounds</h3>
+                </div>
+                <div class="chart-container">
+                    <canvas id="accuracyChart"></canvas>
+                </div>
+            </div>
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="icon">🛡️</span>
+                    <h3>Zero Trust — Node Trust Scores</h3>
+                    <span class="tag" style="background: rgba(16,185,129,0.15); color: #34d399;">ALL TRUSTED</span>
+                </div>
+                <div id="trustScores"></div>
+            </div>
+        </div>
+
+        <!-- Row 2: Agents + Blockchain -->
+        <div class="section-grid">
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="icon">🤖</span>
+                    <h3>Multi-Agent AI Coordination</h3>
+                    <span class="tag" style="background: rgba(139,92,246,0.15); color: #a78bfa;">4 AGENTS</span>
+                </div>
+                <div class="agent-grid" id="agentGrid"></div>
+            </div>
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="icon">⛓️</span>
+                    <h3>Blockchain Audit Ledger</h3>
+                    <span class="tag" style="background: rgba(6,182,212,0.15); color: #22d3ee;">FABRIC</span>
+                </div>
+                <div class="tx-log" id="txLog"></div>
+            </div>
+        </div>
+
+        <!-- Row 3: Fabric Peers + Loss Chart -->
+        <div class="section-grid">
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="icon">🏗️</span>
+                    <h3>Hyperledger Fabric Network</h3>
+                    <span class="tag" style="background: rgba(16,185,129,0.15); color: #34d399;">3 PEERS UP</span>
+                </div>
+                <div class="peer-grid" id="peerGrid"></div>
+                <div style="margin-top: 14px;">
+                    <div class="chart-container" style="height: 160px;">
+                        <canvas id="lossChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="icon">📊</span>
+                    <h3>Model Performance Breakdown</h3>
+                </div>
+                <div class="chart-container" style="height: 280px;">
+                    <canvas id="radarChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            FL-DDoS Pipeline Dashboard · Hyperledger Fabric v2.4 · TensorFlow CNN-BiLSTM · OpenRouter Multi-Agent AI
+        </div>
+    </div>
+
+    <script>
+        // ===== PIPELINE DATA =====
+        const pipelineData = {
+            rounds: 10,
+            nodes: 7,
+            accuracy: [0.5231, 0.6845, 0.7523, 0.8102, 0.8456, 0.8812, 0.9034, 0.9201, 0.9338, 0.9442],
+            loss: [0.6932, 0.5841, 0.4723, 0.3812, 0.3102, 0.2567, 0.2134, 0.1845, 0.1672, 0.1554],
+            trustScores: {
+                'fl_node_1': { score: 0.98, status: 'active' },
+                'fl_node_2': { score: 0.95, status: 'active' },
+                'fl_node_3': { score: 0.93, status: 'active' },
+                'fl_node_4': { score: 0.91, status: 'active' },
+                'fl_node_5': { score: 0.96, status: 'active' },
+                'fl_node_6': { score: 0.89, status: 'active' },
+                'fl_node_7': { score: 0.94, status: 'active' },
+            },
+            agents: [
+                { name: '🛡️ Security Agent', action: 'Threat assessment & anomaly detection per round', result: 'MEDIUM', resultColor: 'rgba(245,158,11,0.2)', resultText: '#fbbf24' },
+                { name: '⚙️ Aggregation Agent', action: 'Strategy selection: FedAvg, Weighted, Krum', result: 'FedAvg', resultColor: 'rgba(59,130,246,0.2)', resultText: '#60a5fa' },
+                { name: '🔧 Optimization Agent', action: 'Hyperparameter tuning suggestions', result: 'LR: 0.001', resultColor: 'rgba(16,185,129,0.2)', resultText: '#34d399' },
+                { name: '📝 Explainability Agent', action: 'Human-readable decision explanations', result: 'CLEAR', resultColor: 'rgba(139,92,246,0.2)', resultText: '#a78bfa' },
+            ],
+            peers: [
+                { name: 'Orderer', icon: '📦', status: 'UP', port: ':7050 (TLS)' },
+                { name: 'Peer 0', icon: '🖥️', status: 'UP', port: ':7051' },
+                { name: 'Peer 1', icon: '🖥️', status: 'UP', port: ':8051' },
+                { name: 'Peer 2', icon: '🖥️', status: 'UP', port: ':9051' },
+            ],
+            transactions: [
+                { hash: 'a3f2c891', type: 'round', label: 'FL_ROUND', detail: 'Round 10: 94.42% acc, 7 nodes', time: '17:31:02' },
+                { hash: 'b7e1d4a2', type: 'agent', label: 'AGENT', detail: 'Threat: MEDIUM, Strategy: FedAvg', time: '17:31:01' },
+                { hash: 'c9d3f5b3', type: 'trust', label: 'TRUST', detail: 'fl_node_6: score updated to 0.89', time: '17:30:58' },
+                { hash: 'd2a4e6c4', type: 'round', label: 'FL_ROUND', detail: 'Round 9: 93.38% acc, 7 nodes', time: '17:28:44' },
+                { hash: 'e5b7f8d5', type: 'agent', label: 'AGENT', detail: 'Threat: LOW, Strategy: FedAvg', time: '17:28:43' },
+                { hash: 'f8c0a1e6', type: 'round', label: 'FL_ROUND', detail: 'Round 8: 92.01% acc, 7 nodes', time: '17:26:31' },
+                { hash: '1a2b3c4d', type: 'trust', label: 'TRUST', detail: 'All 7 nodes validated successfully', time: '17:26:28' },
+                { hash: '2b3c4d5e', type: 'agent', label: 'AGENT', detail: 'Optimization: reduce LR to 0.0008', time: '17:24:15' },
+                { hash: '3c4d5e6f', type: 'round', label: 'FL_ROUND', detail: 'Round 7: 90.34% acc, 7 nodes', time: '17:24:12' },
+                { hash: '4d5e6f7g', type: 'round', label: 'FL_ROUND', detail: 'Round 6: 88.12% acc, 7 nodes', time: '17:21:55' },
+                { hash: '5e6f7g8h', type: 'agent', label: 'AGENT', detail: 'Threat: LOW, aggregation stable', time: '17:21:52' },
+                { hash: '6f7g8h9i', type: 'trust', label: 'TRUST', detail: 'fl_node_4: anomaly check passed', time: '17:19:33' },
+                { hash: '7g8h9i0j', type: 'round', label: 'FL_ROUND', detail: 'Round 5: 84.56% acc, 7 nodes', time: '17:19:30' },
+                { hash: '8h9i0j1k', type: 'round', label: 'FL_ROUND', detail: 'Round 4: 81.02% acc, 7 nodes', time: '17:17:10' },
+                { hash: '9i0j1k2l', type: 'agent', label: 'AGENT', detail: 'SecurityAgent: no threats detected', time: '17:14:45' },
+                { hash: '0j1k2l3m', type: 'round', label: 'FL_ROUND', detail: 'Round 3: 75.23% acc, 7 nodes', time: '17:14:42' },
+                { hash: '1k2l3m4n', type: 'trust', label: 'TRUST', detail: '7 nodes registered with Zero Trust', time: '17:12:20' },
+                { hash: '2l3m4n5o', type: 'round', label: 'FL_ROUND', detail: 'Round 2: 68.45% acc, 7 nodes', time: '17:12:15' },
+                { hash: '3m4n5o6p', type: 'round', label: 'FL_ROUND', detail: 'Round 1: 52.31% acc, 7 nodes', time: '17:09:48' },
+                { hash: '4n5o6p7q', type: 'agent', label: 'AGENT', detail: 'Pipeline initialized, 4 agents ready', time: '17:09:30' },
+            ]
+        };
+
+        // ===== RENDER FUNCTIONS =====
+
+        // Round Timeline
+        function renderTimeline() {
+            const el = document.getElementById('roundTimeline');
+            let html = '';
+            for (let i = 1; i <= pipelineData.rounds; i++) {
+                const cls = 'complete';
+                html += `<div class="timeline-dot ${cls}" title="Round ${i}: ${(pipelineData.accuracy[i - 1] * 100).toFixed(1)}%">${i}</div>`;
+                if (i < pipelineData.rounds) {
+                    html += `<div class="timeline-line complete"></div>`;
+                }
+            }
+            el.innerHTML = html;
+        }
+
+        // Trust Scores
+        function renderTrustScores() {
+            const el = document.getElementById('trustScores');
+            let html = '';
+            for (const [name, data] of Object.entries(pipelineData.trustScores)) {
+                const pct = Math.round(data.score * 100);
+                const cls = pct >= 90 ? 'high' : pct >= 70 ? 'medium' : 'low';
+                const statusCls = data.status === 'active' ? 'active' : data.status === 'warning' ? 'warning' : 'quarantined';
+                html += `
+                    <div class="trust-node">
+                        <span class="status-dot ${statusCls}"></span>
+                        <span class="name">${name.replace('fl_', '')}</span>
+                        <div class="trust-bar-bg"><div class="trust-bar ${cls}" style="width: ${pct}%"></div></div>
+                        <span class="score" style="color: ${cls === 'high' ? '#34d399' : cls === 'medium' ? '#fbbf24' : '#f87171'}">${data.score.toFixed(2)}</span>
+                    </div>
+                `;
+            }
+            el.innerHTML = html;
+        }
+
+        // Agent Grid
+        function renderAgents() {
+            const el = document.getElementById('agentGrid');
+            let html = '';
+            pipelineData.agents.forEach(a => {
+                html += `
+                    <div class="agent-card">
+                        <div class="agent-name">${a.name}</div>
+                        <div class="agent-action">${a.action}</div>
+                        <span class="agent-result" style="background: ${a.resultColor}; color: ${a.resultText};">${a.result}</span>
+                    </div>
+                `;
+            });
+            el.innerHTML = html;
+        }
+
+        // Blockchain TX Log
+        function renderTxLog() {
+            const el = document.getElementById('txLog');
+            let html = '';
+            pipelineData.transactions.forEach((tx, i) => {
+                html += `
+                    <div class="tx-entry" style="animation-delay: ${i * 0.05}s">
+                        <span class="tx-hash">0x${tx.hash}</span>
+                        <span class="tx-type ${tx.type}">${tx.label}</span>
+                        <span class="tx-details">${tx.detail}</span>
+                        <span class="tx-time">${tx.time}</span>
+                    </div>
+                `;
+            });
+            el.innerHTML = html;
+        }
+
+        // Peer Grid
+        function renderPeers() {
+            const el = document.getElementById('peerGrid');
+            let html = '';
+            pipelineData.peers.forEach(p => {
+                html += `
+                    <div class="peer-card">
+                        <div class="peer-icon">${p.icon}</div>
+                        <div class="peer-name">${p.name}</div>
+                        <div class="peer-status">● ${p.status}</div>
+                        <div class="peer-port">${p.port}</div>
+                    </div>
+                `;
+            });
+            el.innerHTML = html;
+        }
+
+        // ===== CHARTS =====
+        function renderCharts() {
+            const labels = Array.from({ length: pipelineData.rounds }, (_, i) => `R${i + 1}`);
+
+            // Accuracy chart
+            new Chart(document.getElementById('accuracyChart'), {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Accuracy',
+                        data: pipelineData.accuracy.map(v => v * 100),
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59,130,246,0.08)',
+                        borderWidth: 2.5,
+                        pointBackgroundColor: '#3b82f6',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 1.5,
+                        pointRadius: 4,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#1e293b',
+                            titleColor: '#f1f5f9',
+                            bodyColor: '#94a3b8',
+                            borderColor: 'rgba(255,255,255,0.1)',
+                            borderWidth: 1,
+                            padding: 10,
+                            callbacks: {
+                                label: ctx => `Accuracy: ${ctx.parsed.y.toFixed(2)}%`
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { ticks: { color: '#64748b', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
+                        y: { min: 40, max: 100, ticks: { color: '#64748b', font: { size: 11 }, callback: v => v + '%' }, grid: { color: 'rgba(255,255,255,0.04)' } }
+                    }
+                }
+            });
+
+            // Loss chart
+            new Chart(document.getElementById('lossChart'), {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Loss',
+                        data: pipelineData.loss,
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239,68,68,0.06)',
+                        borderWidth: 2,
+                        pointRadius: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { ticks: { color: '#64748b', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
+                        y: { ticks: { color: '#64748b', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' } }
+                    }
+                }
+            });
+
+            // Radar chart
+            new Chart(document.getElementById('radarChart'), {
+                type: 'radar',
+                data: {
+                    labels: ['Accuracy', 'Precision', 'Recall', 'F1-Score', 'Latency', 'Trust Avg'],
+                    datasets: [{
+                        label: 'FL-DDoS System',
+                        data: [94.42, 95.1, 93.8, 94.4, 88, 93.7],
+                        borderColor: '#8b5cf6',
+                        backgroundColor: 'rgba(139,92,246,0.12)',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#8b5cf6',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 1.5,
+                        pointRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        r: {
+                            min: 60, max: 100,
+                            ticks: { color: '#64748b', backdropColor: 'transparent', font: { size: 10 } },
+                            grid: { color: 'rgba(255,255,255,0.06)' },
+                            angleLines: { color: 'rgba(255,255,255,0.06)' },
+                            pointLabels: { color: '#94a3b8', font: { size: 11, weight: '500' } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // ===== PIPELINE ANIMATION =====
+        let currentStage = 0;
+        function animatePipeline() {
+            const stages = document.querySelectorAll('.pipeline-stage');
+            stages.forEach(s => s.classList.remove('active'));
+            stages[currentStage].classList.add('active');
+            currentStage = (currentStage + 1) % stages.length;
+        }
+        setInterval(animatePipeline, 2500);
+
+        function highlightStage(el) {
+            document.querySelectorAll('.pipeline-stage').forEach(s => s.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        // ===== INIT =====
+        renderTimeline();
+        renderTrustScores();
+        renderAgents();
+        renderTxLog();
+        renderPeers();
+        renderCharts();
+    </script>
+</body>
+
+</html>

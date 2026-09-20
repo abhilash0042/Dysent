@@ -1,0 +1,44 @@
+# Federated Learning Configuration
+
+## Server Configuration
+server:
+  num_rounds: 20
+  min_nodes: 2
+  selection_fraction: 1.0 # 1.0 = select all nodes per round
+  checkpoint_frequency: 5 # Save every 5 rounds
+  save_dir: "./fl_checkpoints"
+
+## Node Configuration
+nodes:
+  epochs_per_round: 5
+  batch_size: 64
+  learning_rate: 0.001
+  validation_split: 0.1
+
+## Data Distribution
+data:
+  distribution_type: "iid" # Options: "iid" or "non_iid"
+  num_nodes: 5
+  test_size: 0.15
+
+## Model Configuration
+model:
+  use_selected_features: true
+  feature_selection_method: "ensemble" # Best performer: 98.92%
+  timesteps: 10
+  cnn_filters: [64, 128]
+  lstm_units: [64, 32]
+  dropout_rate: 0.5
+
+## Simulation Settings
+simulation:
+  verbose_training: 0 # 0=silent, 1=progress, 2=detailed
+  eval_frequency: 5 # Evaluate every N rounds
+  random_seed: 42
+
+## Expected Performance
+expected:
+  centralized_accuracy: 0.9892 # Baseline
+  fl_target_accuracy: 0.98 # Target for FL
+  convergence_rounds: 15-20
+  communication_mb: 50-100

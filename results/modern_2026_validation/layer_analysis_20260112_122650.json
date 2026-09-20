@@ -1,0 +1,35 @@
+{
+  "timestamp": "2026-01-12 12:26:09",
+  "layers": {
+    "data_generation": {
+      "samples": 15000,
+      "features": 40,
+      "classes": 10,
+      "time_seconds": 0.8957695960998535
+    },
+    "preprocessing": {
+      "input_shape": [
+        15000,
+        40
+      ],
+      "output_shape": [
+        15000,
+        10,
+        4
+      ],
+      "train_samples": 12000,
+      "test_samples": 3000,
+      "time_seconds": 0.0067598819732666016
+    },
+    "base_model": {
+      "architecture": "CNN-BiLSTM",
+      "parameters": 35114,
+      "input_shape": "(10, 4)",
+      "output_classes": 10,
+      "build_time": 0.17481088638305664
+    },
+    "transfer_learning": {
+      "accuracy": 0.7276666760444641,
+      "similarity": -3251.4022673143127,
+      "strategy": "discriminative",
+      "trainable_params": 

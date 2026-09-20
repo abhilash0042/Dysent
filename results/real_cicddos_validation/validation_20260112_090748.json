@@ -1,0 +1,29 @@
+{
+  "timestamp": "20260112_090748",
+  "dataset": "cicddos2019_actual",
+  "phases_tested": [
+    "Real Data Loading",
+    "Transfer Learning (Real)",
+    "Meta-Learning (Real)",
+    "Homomorphic Encryption",
+    "Multi-Agent LLM",
+    "Dashboard",
+    "IoT/5G Edge",
+    "Adaptive LR",
+    "Enhanced Meta-Learning",
+    "Quantum Crypto",
+    "Edge Optimization",
+    "AutoML Pipeline",
+    "Deployment Framework"
+  ],
+  "metrics": {
+    "train_samples": 301959,
+    "test_samples": 64706,
+    "classes": 18,
+    "transfer_learning_accuracy": 0.9409019351005554,
+    "transfer_learning_loss": 0.22610925137996674,
+    "few_shot_accuracy": 0.20000000298023224,
+    "few_shot_loss": 2.897793769836426,
+    "ai_strategy": "FedAvg"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "source_domain": "CICDDoS2019",
+  "target_domain": "UNSW-NB15 (simulated)",
+  "source_accuracy": 0.9811533093452454,
+  "baseline_accuracy": 0.9930999875068665,
+  "transfer_accuracy": 0.9962999820709229,
+  "transfer_gain": 0.0031999945640563965,
+  "transfer_ratio": 1.003222227977356,
+  "time_reduction": 0.5,
+  "timestamp": "20260110_233714"
+}

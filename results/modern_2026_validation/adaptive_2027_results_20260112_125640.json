@@ -1,0 +1,9 @@
+{
+  "timestamp": "2026-01-12T12:56:40.278880",
+  "dataset": "Smart-Adaptive 2027",
+  "accuracy": 0.8206666707992554,
+  "loss": 0.2844087779521942,
+  "similarity": -153713.06558650068,
+  "training_time": 42.15010333061218,
+  "strategy_used": "discriminative"
+}

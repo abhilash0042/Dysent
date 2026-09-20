@@ -1,0 +1,209 @@
+# Real-Time Blockchain Deployment - 3 Peer Network
+# Priority: PRODUCTION MODE (No Simulation Fallback)
+
+version: '3.8'
+
+services:
+  # ============================================================
+  # Orderer (Consensus)
+  # ============================================================
+  orderer.ddos.com:
+    image: hyperledger/fabric-orderer:2.4
+    environment:
+      - FABRIC_LOGGING_SPEC=INFO
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_LISTENPORT=7050
+      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
+      - ORDERER_GENERAL_TLS_ENABLED=true
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_TLS_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+      - ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_CLUSTER_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+      - ORDERER_GENERAL_BOOTSTRAPMETHOD=none
+      - ORDERER_CHANNELPARTICIPATION_ENABLED=true
+      - ORDERER_ADMIN_TLS_ENABLED=false
+      - ORDERER_ADMIN_LISTENADDRESS=0.0.0.0:7053
+      - ORDERER_OPERATIONS_LISTENADDRESS=orderer.ddos.com:8443
+      - ORDERER_OPERATIONS_TLS_ENABLED=false
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: orderer
+    volumes:
+      - ./crypto-config-gen/ordererOrganizations/ddos.com/orderers/orderer.ddos.com/msp:/var/hyperledger/orderer/msp
+      - ./crypto-config-gen/ordererOrganizations/ddos.com/orderers/orderer.ddos.com/tls:/var/hyperledger/orderer/tls
+    ports:
+      - 7050:7050
+      - 7053:7053
+    networks:
+      - fl_network
+
+  # ============================================================
+  # Peer 0 (Port 7051)
+  # ============================================================
+  peer0.fl.ddos.com:
+    image: hyperledger/fabric-peer:2.5
+    environment:
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_PEER_ID=peer0.fl.ddos.com
+      - CORE_PEER_ADDRESS=peer0.fl.ddos.com:7051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.fl.ddos.com:7052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.fl.ddos.com:8051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.fl.ddos.com:7051
+      - CORE_PEER_LOCALMSPID=FLMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp
+      - CORE_PEER_TLS_ENABLED=false
+      - FABRIC_LOGGING_SPEC=INFO
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb0:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: peer node start
+    volumes:
+      - /var/run/:/host/var/run/
+      - ./crypto-config-gen/peerOrganizations/fl.ddos.com/peers/peer0.fl.ddos.com/msp:/etc/hyperledger/fabric/msp
+    ports:
+      - 7051:7051
+    depends_on:
+      - orderer.ddos.com
+      - couchdb0
+    networks:
+      - fl_network
+
+  # ============================================================
+  # Peer 1 (Port 8051)
+  # ============================================================
+  peer1.fl.ddos.com:
+    image: hyperledger/fabric-peer:2.5
+    environment:
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_PEER_ID=peer1.fl.ddos.com
+      - CORE_PEER_ADDRESS=peer1.fl.ddos.com:8051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:8051
+      - CORE_PEER_CHAINCODEADDRESS=peer1.fl.ddos.com:8052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:8052
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.fl.ddos.com:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.fl.ddos.com:8051
+      - CORE_PEER_LOCALMSPID=FLMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp
+      - CORE_PEER_TLS_ENABLED=false
+      - FABRIC_LOGGING_SPEC=INFO
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb1:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: peer node start
+    volumes:
+      - /var/run/:/host/var/run/
+      - ./crypto-config-gen/peerOrganizations/fl.ddos.com/peers/peer1.fl.ddos.com/msp:/etc/hyperledger/fabric/msp
+    ports:
+      - 8051:8051
+    depends_on:
+      - orderer.ddos.com
+      - couchdb1
+    networks:
+      - fl_network
+
+  # ============================================================
+  # Peer 2 (Port 9051)
+  # ============================================================
+  peer2.fl.ddos.com:
+    image: hyperledger/fabric-peer:2.5
+    environment:
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_PEER_ID=peer2.fl.ddos.com
+      - CORE_PEER_ADDRESS=peer2.fl.ddos.com:9051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:9051
+      - CORE_PEER_CHAINCODEADDRESS=peer2.fl.ddos.com:9052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:9052
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.fl.ddos.com:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer2.fl.ddos.com:9051
+      - CORE_PEER_LOCALMSPID=FLMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp
+      - CORE_PEER_TLS_ENABLED=false
+      - FABRIC_LOGGING_SPEC=INFO
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb2:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: peer node start
+    volumes:
+      - /var/run/:/host/var/run/
+      - ./crypto-config-gen/peerOrganizations/fl.ddos.com/peers/peer2.fl.ddos.com/msp:/etc/hyperledger/fabric/msp
+    ports:
+      - 9051:9051
+    depends_on:
+      - orderer.ddos.com
+      - couchdb2
+    networks:
+      - fl_network
+
+  # ============================================================
+  # CouchDB State Databases (one per peer)
+  # ============================================================
+  couchdb0:
+    image: couchdb:3.3
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=adminpw
+    ports:
+      - 5984:5984
+    networks:
+      - fl_network
+
+  couchdb1:
+    image: couchdb:3.3
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=adminpw
+    ports:
+      - 6984:5984
+    networks:
+      - fl_network
+
+  couchdb2:
+    image: couchdb:3.3
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=adminpw
+    ports:
+      - 7984:5984
+    networks:
+      - fl_network
+
+  # ============================================================
+  # Certificate Authority
+  # ============================================================
+  ca.fl.ddos.com:
+    image: hyperledger/fabric-ca:1.5
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca.fl.ddos.com
+      - FABRIC_CA_SERVER_TLS_ENABLED=false
+      - FABRIC_CA_SERVER_PORT=7054
+    ports:
+      - 7054:7054
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
+    volumes:
+      - ./crypto-config-gen/peerOrganizations/fl.ddos.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    networks:
+      - fl_network
+
+networks:
+  fl_network:
+    driver: bridge
+
+volumes:
+  orderer.ddos.com:
+  peer0.fl.ddos.com:
+  peer1.fl.ddos.com:
+  peer2.fl.ddos.com:
+  couchdb0:
+  couchdb1:
+  couchdb2:

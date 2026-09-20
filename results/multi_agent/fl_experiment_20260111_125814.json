@@ -1,0 +1,61 @@
+{
+  "experiment": "multi_agent_fl",
+  "final_accuracy": 0.987666666507721,
+  "final_loss": 0.049482543021440506,
+  "rounds": 5,
+  "nodes": 3,
+  "ai_mode": "MOCK",
+  "ai_decisions": [
+    {
+      "round": 1,
+      "timestamp": "2026-01-11T12:54:16.883521",
+      "security": {
+        "threat_level": "MEDIUM",
+        "mock": true
+      },
+      "aggregation_strategy": "FedAvg",
+      "explanation": "Multi-agent coordination complete (MOCK mode)"
+    },
+    {
+      "round": 2,
+      "timestamp": "2026-01-11T12:55:08.140186",
+      "security": {
+        "threat_level": "MEDIUM",
+        "mock": true
+      },
+      "aggregation_strategy": "FedAvg",
+      "explanation": "Multi-agent coordination complete (MOCK mode)"
+    },
+    {
+      "round": 3,
+      "timestamp": "2026-01-11T12:56:09.716135",
+      "security": {
+        "threat_level": "MEDIUM",
+        "mock": true
+      },
+      "aggregation_strategy": "FedAvg",
+      "explanation": "Multi-agent coordination complete (MOCK mode)"
+    },
+    {
+      "round": 4,
+      "timestamp": "2026-01-11T12:57:11.184984",
+      "security": {
+        "threat_level": "MEDIUM",
+        "mock": true
+      },
+      "aggregation_strategy": "FedAvg",
+      "explanation": "Multi-agent coordination complete (MOCK mode)"
+    },
+    {
+      "round": 5,
+      "timestamp": "2026-01-11T12:58:10.597241",
+      "security": {
+        "threat_level": "MEDIUM",
+        "mock": true
+      },
+      "aggregation_strategy": "FedAvg",
+      "explanation": "Multi-agent coordination complete (MOCK mode)"
+    }
+  ],
+  "timestamp": "20260111_125814"
+}
