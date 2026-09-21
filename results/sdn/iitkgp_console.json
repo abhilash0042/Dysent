@@ -1,0 +1,1122 @@
+[
+  {
+    "kind": "APP_DOWN",
+    "ip": "-",
+    "detail": "IITKgp stopped serving after 0 observed requests (URLError)",
+    "served": 0,
+    "discarded": 0,
+    "timestamp": "2026-09-21T13:46:21.340741Z"
+  },
+  {
+    "kind": "BLOCK",
+    "ip": "127.0.0.1",
+    "detail": "Operator applied SDN after live hang \u2014 attacker blocked on :8091, app :8765 restored",
+    "served": 0,
+    "discarded": 0,
+    "timestamp": "2026-09-21T13:46:34.857694Z"
+  },
+  {
+    "kind": "APP_RECOVER",
+    "ip": "-",
+    "detail": "IITKgp serving again after 13s",
+    "served": 0,
+    "discarded": 0,
+    "timestamp": "2026-09-21T13:46:35.059957Z"
+  },
+  {
+    "kind": "APP_DOWN",
+    "ip": "-",
+    "detail": "IITKgp stopped serving after 0 observed requests (URLError)",
+    "served": 0,
+    "discarded": 0,
+    "timestamp": "2026-09-21T13:56:04.639765Z"
+  },
+  {
+    "kind": "APP_RECOVER",
+    "ip": "-",
+    "detail": "IITKgp serving again after 3s",
+    "served": 0,
+    "discarded": 0,
+    "timestamp": "2026-09-21T13:56:08.218458Z"
+  },
+  {
+    "kind": "BLOCK",
+    "ip": "127.0.0.1",
+    "detail": "Operator applied SDN after live hang \u2014 attacker blocked on :8091, app :8765 restored",
+    "served": 0,
+    "discarded": 0,
+    "timestamp": "2026-09-21T13:56:08.492961Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "430B \u2192 127.0.0.1:8765",
+    "served": 1,
+    "discarded": 0,
+    "timestamp": "2026-09-21T13:59:47.865946Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "340B \u2192 127.0.0.1:8765",
+    "served": 2,
+    "discarded": 0,
+    "timestamp": "2026-09-21T13:59:48.059389Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "355B \u2192 127.0.0.1:8765",
+    "served": 3,
+    "discarded": 0,
+    "timestamp": "2026-09-21T13:59:48.070388Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "382B \u2192 127.0.0.1:8765",
+    "served": 4,
+    "discarded": 0,
+    "timestamp": "2026-09-21T13:59:48.141989Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "386B \u2192 127.0.0.1:8765",
+    "served": 5,
+    "discarded": 0,
+    "timestamp": "2026-09-21T13:59:48.151520Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "382B \u2192 127.0.0.1:8765",
+    "served": 6,
+    "discarded": 0,
+    "timestamp": "2026-09-21T13:59:48.180006Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "379B \u2192 127.0.0.1:8765",
+    "served": 7,
+    "discarded": 0,
+    "timestamp": "2026-09-21T13:59:48.193539Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "386B \u2192 127.0.0.1:8765",
+    "served": 8,
+    "discarded": 0,
+    "timestamp": "2026-09-21T13:59:48.231420Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "386B \u2192 127.0.0.1:8765",
+    "served": 9,
+    "discarded": 0,
+    "timestamp": "2026-09-21T13:59:48.243964Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "394B \u2192 127.0.0.1:8765",
+    "served": 10,
+    "discarded": 0,
+    "timestamp": "2026-09-21T13:59:48.265988Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 11,
+    "discarded": 0,
+    "timestamp": "2026-09-21T13:59:48.277987Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "382B \u2192 127.0.0.1:8765",
+    "served": 12,
+    "discarded": 0,
+    "timestamp": "2026-09-21T13:59:48.294989Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "395B \u2192 127.0.0.1:8765",
+    "served": 13,
+    "discarded": 0,
+    "timestamp": "2026-09-21T13:59:48.364727Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 14,
+    "discarded": 0,
+    "timestamp": "2026-09-21T13:59:48.409680Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 15,
+    "discarded": 0,
+    "timestamp": "2026-09-21T13:59:51.603763Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 16,
+    "discarded": 0,
+    "timestamp": "2026-09-21T13:59:53.249954Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 17,
+    "discarded": 0,
+    "timestamp": "2026-09-21T13:59:53.356519Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 18,
+    "discarded": 0,
+    "timestamp": "2026-09-21T13:59:54.349080Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 19,
+    "discarded": 0,
+    "timestamp": "2026-09-21T13:59:55.356093Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 20,
+    "discarded": 0,
+    "timestamp": "2026-09-21T13:59:56.357078Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 21,
+    "discarded": 0,
+    "timestamp": "2026-09-21T13:59:57.355498Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 22,
+    "discarded": 0,
+    "timestamp": "2026-09-21T13:59:58.392121Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 23,
+    "discarded": 0,
+    "timestamp": "2026-09-21T13:59:59.362004Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 24,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:00.359969Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 25,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:01.358727Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 26,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:02.356635Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 27,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:03.349864Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 28,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:04.353130Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 29,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:05.360706Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 30,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:06.376416Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 31,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:07.357660Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 32,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:08.356568Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 33,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:09.360824Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 34,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:10.355917Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 35,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:11.358398Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 36,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:12.355572Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 37,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:13.361631Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 38,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:14.369772Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 39,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:15.356305Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 40,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:16.355757Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 41,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:17.349676Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 42,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:18.355820Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 43,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:19.350766Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 44,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:20.359890Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 45,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:21.357188Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 46,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:22.354611Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 47,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:23.354510Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 48,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:24.349900Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 49,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:25.354219Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 50,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:26.350796Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 51,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:27.348222Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 52,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:28.370440Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 53,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:29.364196Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 54,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:30.360366Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 55,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:31.356631Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 56,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:32.366683Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 57,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:33.356300Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 58,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:34.354559Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 59,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:35.355727Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 60,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:36.356416Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 61,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:37.350997Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 62,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:38.353305Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 63,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:39.349279Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 64,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:40.349850Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 65,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:41.354249Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 66,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:42.352162Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 67,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:43.353840Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 68,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:44.966826Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 69,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:45.373916Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 70,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:46.352243Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 71,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:00:47.352185Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 72,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:01:32.414001Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 73,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:02:32.529117Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 74,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:03:32.368850Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 75,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:04:32.378033Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 76,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:05:32.363938Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 77,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:06:32.362330Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 78,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:07:32.354001Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 79,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:08:32.360524Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 80,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:09:32.361544Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 81,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:10:32.380110Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 82,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:11:32.404156Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 83,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:23:53.532168Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 84,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:24:32.742824Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 85,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:25:32.368280Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 86,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:26:32.364720Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 87,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:27:32.376212Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 88,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:28:32.367635Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 89,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:29:32.364752Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 90,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:30:32.349444Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 91,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:31:32.389276Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 92,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:32:32.356831Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 93,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:33:32.352910Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 94,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:34:32.363536Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 95,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:35:32.358616Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 96,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:36:32.364452Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 97,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:37:32.355549Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 98,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:38:32.356890Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 99,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:39:32.361660Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 100,
+    "discarded": 0,
+    "timestamp": "2026-09-21T14:40:33.883889Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 101,
+    "discarded": 0,
+    "timestamp": "2026-09-21T15:00:56.578678Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 102,
+    "discarded": 0,
+    "timestamp": "2026-09-21T15:01:32.369375Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 103,
+    "discarded": 0,
+    "timestamp": "2026-09-21T15:02:32.354994Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 104,
+    "discarded": 0,
+    "timestamp": "2026-09-21T15:03:32.354715Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 105,
+    "discarded": 0,
+    "timestamp": "2026-09-21T15:04:32.386079Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 106,
+    "discarded": 0,
+    "timestamp": "2026-09-21T15:05:32.374569Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 107,
+    "discarded": 0,
+    "timestamp": "2026-09-21T15:06:32.396087Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 108,
+    "discarded": 0,
+    "timestamp": "2026-09-21T15:07:32.348602Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 109,
+    "discarded": 0,
+    "timestamp": "2026-09-21T15:08:32.366676Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 110,
+    "discarded": 0,
+    "timestamp": "2026-09-21T15:09:32.370767Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 111,
+    "discarded": 0,
+    "timestamp": "2026-09-21T15:10:32.362527Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 112,
+    "discarded": 0,
+    "timestamp": "2026-09-21T15:11:32.363906Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 113,
+    "discarded": 0,
+    "timestamp": "2026-09-21T15:12:32.366459Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 114,
+    "discarded": 0,
+    "timestamp": "2026-09-21T15:13:32.384293Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 115,
+    "discarded": 0,
+    "timestamp": "2026-09-21T15:14:32.375715Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 116,
+    "discarded": 0,
+    "timestamp": "2026-09-21T15:15:32.378773Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 117,
+    "discarded": 0,
+    "timestamp": "2026-09-21T15:16:32.366814Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 118,
+    "discarded": 0,
+    "timestamp": "2026-09-21T15:17:32.374399Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 119,
+    "discarded": 0,
+    "timestamp": "2026-09-21T15:18:32.371425Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 120,
+    "discarded": 0,
+    "timestamp": "2026-09-21T15:19:32.363762Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 121,
+    "discarded": 0,
+    "timestamp": "2026-09-21T15:20:32.364560Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 122,
+    "discarded": 0,
+    "timestamp": "2026-09-21T15:21:32.368427Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 123,
+    "discarded": 0,
+    "timestamp": "2026-09-21T15:22:32.368912Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 124,
+    "discarded": 0,
+    "timestamp": "2026-09-21T15:23:32.366427Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 125,
+    "discarded": 0,
+    "timestamp": "2026-09-21T15:24:32.375149Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 126,
+    "discarded": 0,
+    "timestamp": "2026-09-21T15:25:32.373727Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 127,
+    "discarded": 0,
+    "timestamp": "2026-09-21T15:26:32.361708Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 128,
+    "discarded": 0,
+    "timestamp": "2026-09-21T15:27:32.377031Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 129,
+    "discarded": 0,
+    "timestamp": "2026-09-21T15:28:32.371530Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 130,
+    "discarded": 0,
+    "timestamp": "2026-09-21T15:29:32.356407Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 131,
+    "discarded": 0,
+    "timestamp": "2026-09-21T15:30:32.366977Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 132,
+    "discarded": 0,
+    "timestamp": "2026-09-21T15:31:32.381876Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 133,
+    "discarded": 0,
+    "timestamp": "2026-09-21T15:32:32.371360Z"
+  },
+  {
+    "kind": "FWD",
+    "ip": "192.168.7.3",
+    "detail": "381B \u2192 127.0.0.1:8765",
+    "served": 134,
+    "discarded": 0,
+    "timestamp": "2026-09-21T15:33:32.407050Z"
+  }
+]

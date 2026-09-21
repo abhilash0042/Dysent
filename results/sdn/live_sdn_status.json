@@ -1,0 +1,59 @@
+{
+  "model": "fl_global_model_pathb_central.keras",
+  "input_shape": [
+    10,
+    40
+  ],
+  "observations": 111,
+  "actions_taken": 2,
+  "blocked_ips": [],
+  "packets_blocked": 0,
+  "backend": "composite:app_gateway+nftables+windows_firewall",
+  "children": {
+    "app_gateway": {
+      "backend": "app_gateway",
+      "active_blocks": 0,
+      "packets_blocked_total": 0,
+      "requests_discarded": 0
+    },
+    "nftables": {
+      "backend": "nftables",
+      "available": true,
+      "via_wsl": true,
+      "platform": "Windows",
+      "active_blocks": 0,
+      "packets_blocked_total": 0
+    },
+    "windows_firewall": {
+      "backend": "windows_firewall",
+      "available": true,
+      "active_blocks": 0,
+      "packets_blocked_total": 0
+    }
+  },
+  "served": 134,
+  "discarded": 0,
+  "failed_upstream": 0,
+  "last_prediction": {
+    "source_ip": "127.0.0.1",
+    "attack_class": "Slowloris",
+    "attack_score": 0.99,
+    "pps": 0,
+    "action": "block",
+    "reason": "Operator applied SDN after live hang \u2014 attacker blocked on :8091, app :8765 restored",
+    "switch": "composite:app_gateway+nftables+windows_firewall"
+  },
+  "app_health": {
+    "ok": true,
+    "latency_ms": 6,
+    "status": "UP",
+    "fail_streak": 0,
+    "error": ""
+  },
+  "app_down_at_request": null,
+  "protected_app": "127.0.0.1:8765",
+  "listen_port": 8091,
+  "sdn_applied": true,
+  "timestamp": "2026-09-21T15:34:07.104195Z",
+  "state": "ACTIVE"
+}

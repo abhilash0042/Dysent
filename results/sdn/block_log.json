@@ -1,0 +1,24 @@
+[
+  {
+    "source_ip": "127.0.0.1",
+    "action": "block",
+    "attack_class": "Slowloris",
+    "attack_score": 0.99,
+    "pps": 0,
+    "reason": "Operator applied SDN after live hang \u2014 attacker blocked on :8091, app :8765 restored",
+    "switch": "composite:app_gateway",
+    "ttl_seconds": 300,
+    "timestamp": "2026-09-21T13:46:34.650087Z"
+  },
+  {
+    "source_ip": "127.0.0.1",
+    "action": "block",
+    "attack_class": "Slowloris",
+    "attack_score": 0.99,
+    "pps": 0,
+    "reason": "Operator applied SDN after live hang \u2014 attacker blocked on :8091, app :8765 restored",
+    "switch": "composite:app_gateway",
+    "ttl_seconds": 300,
+    "timestamp": "2026-09-21T13:56:08.210970Z"
+  }
+]
