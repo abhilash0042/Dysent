@@ -630,6 +630,21 @@
             color: #a78bfa;
         }
 
+        .tx-badge.block {
+            background: rgba(239, 68, 68, 0.18);
+            color: #f87171;
+        }
+
+        .tx-badge.rate_limit {
+            background: rgba(245, 158, 11, 0.16);
+            color: #fbbf24;
+        }
+
+        .tx-badge.log {
+            background: rgba(148, 163, 184, 0.14);
+            color: #94a3b8;
+        }
+
         .tx-detail {
             font-size: 0.66rem;
             color: var(--text-secondary);
@@ -904,6 +919,36 @@
                 <div class="tx-scroll" id="txPanel">
                     <div style="color:var(--text-muted);font-size:0.72rem;padding:20px 0;text-align:center;">Waiting for
                         transactions...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SDN Defense Panel -->
+        <div class="panel" style="margin-bottom:14px;">
+            <div class="ph"><span class="icon">🔒</span>
+                <h3>SDN Closed-Loop Defense</h3><span class="tag" id="sdnTag"
+                    style="background:rgba(239,68,68,0.12);color:#f87171;">WAITING</span>
+            </div>
+            <div class="grid-3" style="margin-bottom:12px;">
+                <div class="kpi r" style="padding:12px;">
+                    <div class="kpi-label">Model / backend</div>
+                    <div class="kpi-val" style="font-size:0.85rem;" id="sdnModel">—</div>
+                    <div class="kpi-sub" id="sdnBackend">—</div>
+                </div>
+                <div class="kpi a" style="padding:12px;">
+                    <div class="kpi-label">Observations</div>
+                    <div class="kpi-val a" id="sdnObs">0</div>
+                    <div class="kpi-sub" id="sdnDropped">0 packets discarded (sim)</div>
+                </div>
+                <div class="kpi r" style="padding:12px;">
+                    <div class="kpi-label">Blocked IPs</div>
+                    <div class="kpi-val r" id="sdnBlocks">0</div>
+                    <div class="kpi-sub" id="sdnLastAction">No action yet</div>
+                </div>
+            </div>
+            <div class="tx-scroll" id="sdnAlerts" style="max-height:180px;">
+                <div style="color:var(--text-muted);font-size:0.72rem;padding:12px;text-align:center;">
+                    Run: python experiments/mininet/run_sdn_defense.py
                 </div>
             </div>
         </div>
@@ -1297,16 +1342,88 @@
             } catch (err) { /* Docker check failed silently */ }
         }
 
+        function updateSdn(status, alerts) {
+            const tag = document.getElementById('sdnTag');
+            const modelEl = document.getElementById('sdnModel');
+            const backendEl = document.getElementById('sdnBackend');
+            const obsEl = document.getElementById('sdnObs');
+            const droppedEl = document.getElementById('sdnDropped');
+            const blocksEl = document.getElementById('sdnBlocks');
+            const lastEl = document.getElementById('sdnLastAction');
+            const panel = document.getElementById('sdnAlerts');
+
+            if (!status || status._source === 'waiting' || status.state === 'WAITING') {
+                tag.textContent = 'WAITING';
+                tag.style.color = '#f87171';
+                return;
+            }
+
+            const ts = Date.parse(status.timestamp || '');
+            const ageMs = Number.isFinite(ts) ? Date.now() - ts : 999999;
+            const live = ageMs < 15000;
+            tag.textContent = live ? (status.state || 'ACTIVE') : 'STALE';
+            tag.style.color = live ? '#34d399' : '#fbbf24';
+
+            modelEl.textContent = status.model || '—';
+            backendEl.textContent = (status.backend || 'unknown') + (live ? ' · live' : ' · last run ended');
+            obsEl.textContent = status.observations ?? 0;
+            droppedEl.textContent = (status.packets_blocked ?? 0).toLocaleString() + ' packets discarded (sim)';
+            const rules = status.blocked_ips || [];
+            blocksEl.textContent = rules.filter(r => (r.action || '').includes('drop') || r.action === 'block').length || rules.length;
+            if (status.last_alert) {
+                lastEl.textContent = (status.last_alert.action || '').toUpperCase() + ' ' + (status.last_alert.source_ip || '');
+            }
+
+            const items = alerts && alerts.length ? alerts.slice().reverse() : [];
+            if (items.length === 0 && status.last_alert) {
+                items.push(status.last_alert);
+            }
+            if (items.length === 0) {
+                panel.innerHTML = '<div style="color:var(--text-muted);font-size:0.72rem;padding:12px;text-align:center;">No alerts yet</div>';
+                return;
+            }
+
+            let html = '';
+            items.slice(0, 20).forEach(a => {
+                const act = (a.action || 'log').toLowerCase();
+                const cls = act === 'block' ? 'block' : act === 'rate_limit' ? 'rate_limit' : 'log';
+                const time = a.timestamp ? a.timestamp.split('T')[1]?.substring(0, 8) : '';
+                const score = (a.attack_score ?? 0);
+                const scoreTxt = typeof score.toFixed === 'function' ? score.toFixed(2) : score;
+                html += `<div class="tx">
+            <span class="tx-hash">${a.source_ip || '—'}</span>
+            <span class="tx-badge ${cls}">${act.toUpperCase()}</span>
+            <span class="tx-detail">${a.attack_class || '—'} score=${scoreTxt}</span>
+            <span class="tx-time">${time}</span>
+        </div>`;
+            });
+            panel.innerHTML = html;
+        }
+
+        async function fetchSdn() {
+            try {
+                const [sRes, aRes] = await Promise.all([
+                    fetch(API + '/sdn/status'),
+                    fetch(API + '/sdn/alerts'),
+                ]);
+                const status = await sRes.json();
+                const alerts = await aRes.json();
+                updateSdn(status, alerts);
+            } catch (err) { /* SDN optional */ }
+        }
+
         // ========================================
         // INIT
         // ========================================
         initChart();
         fetchStatus();
         fetchDocker();
+        fetchSdn();
 
         // Poll status every 2 seconds, docker every 10 seconds
         setInterval(fetchStatus, 2000);
         setInterval(fetchDocker, 10000);
+        setInterval(fetchSdn, 2000);
     </script>
 </body>
 

@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DYSENT · SDN WAR ROOM</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;600&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --paper: #efe6d4;
+      --ink: #16120c;
+      --blood: #e11d2e;
+      --fire: #ff5a00;
+      --acid: #c6ff1a;
+      --steel: #2a3338;
+      --line: rgba(22, 18, 12, 0.18);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: 'IBM Plex Mono', monospace;
+      overflow: hidden;
+    }
+    body::before {
+      content: '';
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background-image:
+        linear-gradient(rgba(22,18,12,.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(22,18,12,.06) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+    .stage { position: relative; z-index: 1; height: 100%; display: grid; grid-template-rows: auto 1fr auto; padding: 14px 18px; gap: 12px; }
+    header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 4px solid var(--ink); padding-bottom: 8px; }
+    .brand { font-family: 'Bebas Neue', sans-serif; font-size: 3.1rem; letter-spacing: .06em; line-height: .85; }
+    .brand span { color: var(--fire); }
+    .meta { text-align: right; font-size: 11px; text-transform: uppercase; }
+    .stamp { display: inline-block; border: 2px solid var(--blood); color: var(--blood); padding: 2px 8px; transform: rotate(-4deg); font-family: 'Syne', sans-serif; font-weight: 800; }
+    .stamp.ok { border-color: #1a6b2a; color: #1a6b2a; }
+    .grid { display: grid; grid-template-columns: 280px 1fr 340px; gap: 12px; min-height: 0; }
+    .col { display: flex; flex-direction: column; gap: 12px; min-height: 0; }
+    .panel {
+      background: rgba(255,255,255,.38);
+      border: 2px solid var(--ink);
+      box-shadow: 6px 6px 0 var(--ink);
+      padding: 12px;
+      min-height: 0;
+    }
+    .panel h2 { font-family: 'Syne', sans-serif; font-size: 13px; letter-spacing: .18em; text-transform: uppercase; margin-bottom: 10px; }
+    .giant { font-family: 'Bebas Neue', sans-serif; font-size: 4.4rem; line-height: .85; }
+    .giant.down { color: var(--blood); }
+    .label { font-size: 10px; letter-spacing: .2em; text-transform: uppercase; opacity: .7; }
+    .btn {
+      width: 100%; border: 3px solid var(--ink); background: var(--fire); color: #fff;
+      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 18px; padding: 16px 10px;
+      cursor: pointer; text-transform: uppercase; letter-spacing: .08em;
+    }
+    .btn:hover { background: var(--blood); }
+    .btn.stop { background: var(--ink); }
+    .btn.sec { background: var(--acid); color: var(--ink); margin-top: 8px; font-size: 13px; padding: 10px; }
+    .topo { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 18px 8px; }
+    .node { flex: 1; text-align: center; border: 2px dashed var(--ink); padding: 14px 6px; background: #fff7e8; }
+    .node b { display: block; font-family: 'Syne'; font-size: 14px; }
+    .node.hit { background: var(--blood); color: #fff; border-style: solid; }
+    .arrow { font-size: 28px; font-family: 'Bebas Neue'; }
+    table { width: 100%; border-collapse: collapse; font-size: 11px; }
+    th { text-align: left; border-bottom: 2px solid var(--ink); padding: 4px; }
+    td { padding: 6px 4px; border-bottom: 1px solid var(--line); }
+    .console { flex: 1; overflow: auto; background: var(--steel); color: #d7f5c6; padding: 10px; font-size: 11px; line-height: 1.45; min-height: 180px; }
+    .console .drop { color: #ff8a7a; }
+    .console .down { color: #ffd36b; }
+    .console .fwd { color: #c6ff1a; }
+    .pred { font-size: 22px; font-family: 'Syne'; }
+    footer { display: flex; justify-content: space-between; font-size: 10px; text-transform: uppercase; opacity: .7; }
+    .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+    .stat { border: 2px solid var(--ink); padding: 10px; background: #fff; }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <header>
+      <div>
+        <div class="brand">DYSENT <span>SDN</span> WAR ROOM</div>
+        <div class="label">Closed-loop DDoS defense · Path-B CNN-BiLSTM · IITKgp KV-Cache target</div>
+      </div>
+      <div class="meta">
+        <div id="stamp" class="stamp">APP UNKNOWN</div>
+        <div id="clock"></div>
+        <div>gateway :8091 → app :8765</div>
+      </div>
+    </header>
+
+    <div class="grid">
+      <div class="col">
+        <div class="panel">
+          <h2>Launch attack</h2>
+          <p style="font-size:11px;margin-bottom:10px;"><b>1.</b> Attack IITKgp — app hangs (Disable cache, then reload :8765).<br/><b>2.</b> Apply SDN — occupy stops, :8765 serves again, attacker is blocked on :8091.</p>
+          <button class="btn" id="atkBtn" onclick="startAttack('direct')">Attack IITKgp — crash it</button>
+          <button class="btn sec" id="sdnBtn" onclick="applySdn()">Apply SDN framework</button>
+          <button class="btn stop" style="margin-top:8px;font-size:13px;padding:10px;" onclick="stopAttack()">Stop attack</button>
+          <div id="atkState" class="label" style="margin-top:10px;">idle</div>
+        </div>
+        <div class="panel" style="flex:1;">
+          <h2>Live fetch :8765</h2>
+          <div class="label">Cache-bust probe (ignore a cached IITKgp tab)</div>
+          <div class="giant" id="diedAt">—</div>
+          <div class="label" id="diedNote">Waiting for a hang</div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="panel">
+          <div class="topo">
+            <div class="node" id="nAtk"><b>ATTACKER</b><small id="atkIp">—</small></div>
+            <div class="arrow">→</div>
+            <div class="node" id="nSw"><b>SWITCH DOOR</b><small id="swName">:8091 source-IP drop</small></div>
+            <div class="arrow">→</div>
+            <div class="node" id="nApp"><b>IITKGP APP</b><small id="appNode">:8765</small></div>
+          </div>
+          <div class="row3">
+            <div class="stat"><div class="label">Served via :8091</div><div class="giant" style="font-size:2.4rem;" id="served">0</div></div>
+            <div class="stat"><div class="label">Discarded at door</div><div class="giant" style="font-size:2.4rem;color:var(--fire);" id="discarded">0</div></div>
+            <div class="stat"><div class="label">Block log rows</div><div class="giant" style="font-size:2.4rem;" id="actions">0</div></div>
+          </div>
+        </div>
+        <div class="panel">
+          <h2>Model prediction</h2>
+          <div class="pred" id="predClass">NO INFERENCE YET</div>
+          <div id="predMeta" style="font-size:12px;margin-top:6px;">score — · pps — · action —</div>
+        </div>
+        <div class="panel" style="flex:1; overflow:auto;">
+          <h2>Blocked IPs · switch log</h2>
+          <table>
+            <thead><tr><th>Time</th><th>IP</th><th>Action</th><th>Class</th><th>Reason</th></tr></thead>
+            <tbody id="blocks"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="panel" style="flex:1; display:flex; flex-direction:column;">
+          <h2>IITKgp + SDN console</h2>
+          <div class="console" id="console"></div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <div>Open IITKgp: http://localhost:8765 · Protected: http://localhost:8091</div>
+      <div>This board is not the FL pipeline UI — dedicated SDN command surface</div>
+    </footer>
+  </div>
+  <script>
+    const API = 'http://localhost:5050/api';
+    function tick() { document.getElementById('clock').textContent = new Date().toLocaleString(); }
+    setInterval(tick, 1000); tick();
+
+    async function startAttack(mode) {
+      document.getElementById('atkState').textContent = 'starting crash flood…';
+      const r = await fetch(API + '/sdn/attack/start', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode })
+      });
+      const j = await r.json().catch(() => ({}));
+      document.getElementById('atkState').textContent = j.message || ('HTTP ' + r.status);
+    }
+    async function applySdn() {
+      document.getElementById('atkState').textContent = 'applying SDN — restoring app…';
+      const r = await fetch(API + '/sdn/apply', { method: 'POST' });
+      const j = await r.json().catch(() => ({}));
+      document.getElementById('atkState').textContent = j.message || ('HTTP ' + r.status);
+    }
+    async function stopAttack() {
+      const r = await fetch(API + '/sdn/attack/stop', { method: 'POST' });
+      const j = await r.json();
+      document.getElementById('atkState').textContent = j.message || 'stopped';
+    }
+
+    function paint(ops) {
+      const s = ops.status || {};
+      const live = ops.app_live === true;
+      const h = s.app_health || {};
+      const stamp = document.getElementById('stamp');
+      const up = live;
+      if (!h.status) {
+        stamp.textContent = 'APP UNKNOWN';
+        stamp.className = 'stamp';
+      } else {
+        stamp.textContent = up ? (h.status === 'DEGRADED' ? 'APP DEGRADED' : 'APP SERVING') : 'APP STOPPED SERVING';
+        stamp.className = 'stamp' + (up ? ' ok' : '');
+      }
+      document.getElementById('nApp').className = 'node' + (up ? '' : ' hit');
+      document.getElementById('served').textContent = s.served ?? 0;
+      document.getElementById('discarded').textContent = s.discarded ?? 0;
+      document.getElementById('actions').textContent = (ops.block_log && ops.block_log.length) ? ops.block_log.length : (s.actions_taken ?? 0);
+      document.getElementById('swName').textContent = (s.backend || '—').replace('composite:', '');
+      const ms = h.latency_ms ?? ops.probe_ms;
+      if (up) {
+        document.getElementById('diedAt').textContent = (ms != null ? ms + 'ms' : '—');
+        document.getElementById('diedAt').className = 'giant';
+        document.getElementById('diedNote').textContent = 'IITKgp answered this poll. Hard-refresh :8765 if the tab still looks cached.';
+      } else {
+        document.getElementById('diedAt').textContent = 'TIMEOUT';
+        document.getElementById('diedAt').className = 'giant down';
+        document.getElementById('diedNote').textContent = 'New requests to :8765 are hanging. Cached SPA tabs can still look “fine”.';
+      }
+      const p = s.last_prediction;
+      if (s.state === 'GATEWAY_OFF' || !ops.gateway_live) {
+        document.getElementById('predClass').textContent = 'SDN GATEWAY OFF';
+        document.getElementById('predMeta').textContent = 'Not showing old DrDoS / RATE_LIMIT / served=57. Crash the app on :8765 first.';
+        document.getElementById('atkIp').textContent = '—';
+        document.getElementById('nAtk').className = 'node';
+        document.getElementById('nSw').className = 'node';
+      } else if (p) {
+        document.getElementById('predClass').textContent = p.attack_class + '  ·  ' + (p.action || '').toUpperCase();
+        document.getElementById('predMeta').textContent =
+          `score ${p.attack_score} · ${p.pps} events/s · ${p.reason || ''} · switch ${p.switch || s.backend || ''}`;
+        document.getElementById('atkIp').textContent = p.source_ip || '—';
+        document.getElementById('nAtk').className = 'node' + (p.action === 'block' ? ' hit' : '');
+        document.getElementById('nSw').className = 'node' + (p.action === 'block' ? ' hit' : '');
+      } else {
+        document.getElementById('predClass').textContent = 'NO INFERENCE YET';
+        document.getElementById('predMeta').textContent = 'score — · pps — · action —';
+      }
+      const tb = document.getElementById('blocks');
+      const rules = (ops.block_log && ops.block_log.length)
+        ? ops.block_log.slice().reverse()
+        : (s.blocked_ips || []);
+      tb.innerHTML = rules.length ? rules.map(r => {
+        const t = (r.timestamp || r.installed_at || '').split('T')[1]?.slice(0,8) || '';
+        return `<tr><td>${t}</td><td>${r.source_ip || '—'}</td><td>${(r.action || '').toUpperCase()}</td><td>${r.attack_class || '—'}</td><td>${r.reason || r.switch || '—'}</td></tr>`;
+      }).join('') : '<tr><td colspan="5">No blocks yet — attack, then Apply SDN</td></tr>';
+
+      const lines = []
+        .concat(ops.iitkgp || [])
+        .concat(ops.console || []);
+      lines.sort((a,b) => (a.timestamp||'').localeCompare(b.timestamp||''));
+      const box = document.getElementById('console');
+      box.innerHTML = lines.slice(-80).map(l => {
+        const k = (l.kind || 'APP').toLowerCase();
+        const cls = k.includes('drop') || k === 'drop' ? 'drop' : (k.includes('down') ? 'down' : 'fwd');
+        const t = (l.timestamp || '').split('T')[1]?.slice(0,8) || '';
+        const body = l.line || l.detail || '';
+        return `<div class="${cls}">${t}  ${(l.ip||'app')}  ${k}  ${body}</div>`;
+      }).join('') || '<div>Waiting for IITKgp hits… open http://localhost:8765</div>';
+      box.scrollTop = box.scrollHeight;
+
+      if (ops.attack) {
+        document.getElementById('atkState').textContent = ops.attack.running
+          ? `ATTACK LIVE · ${ops.attack.mode} · pid ${ops.attack.pids}`
+          : (document.getElementById('atkState').textContent || 'idle');
+      }
+    }
+
+    async function poll() {
+      try {
+        const r = await fetch(API + '/sdn/ops');
+        paint(await r.json());
+      } catch (e) {}
+    }
+    poll();
+    setInterval(poll, 800);
+  </script>
+</body>
+</html>
