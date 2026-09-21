@@ -1,0 +1,86 @@
+{
+  "class_names": [
+    "Benign",
+    "DrDoS_DNS",
+    "DrDoS_LDAP",
+    "DrDoS_MSSQL",
+    "DrDoS_NTP",
+    "DrDoS_NetBIOS",
+    "DrDoS_SNMP",
+    "DrDoS_UDP",
+    "LDAP",
+    "MSSQL",
+    "NetBIOS",
+    "Portmap",
+    "Syn",
+    "TFTP",
+    "UDP",
+    "UDP-lag",
+    "UDPLag",
+    "WebDDoS"
+  ],
+  "n_total": 6866,
+  "central": {
+    "val": {
+      "tag": "central-val",
+      "n": 887,
+      "acc_18": 0.019165727170236752,
+      "binary_recall": 0.9851598173515982,
+      "binary_fpr": 0.0,
+      "syn_recall": 1.0,
+      "threshold": 0.8,
+      "tp": 863,
+      "fp": 0,
+      "fn": 13,
+      "tn": 11
+    },
+    "test": {
+      "tag": "central-test",
+      "n": 1089,
+      "acc_18": 0.19651056014692378,
+      "binary_recall": 0.9464082098061574,
+      "binary_fpr": 0.0047169811320754715,
+      "syn_recall": null,
+      "threshold": 0.8,
+      "tp": 830,
+      "fp": 1,
+      "fn": 47,
+      "tn": 211
+    }
+  },
+  "federated": {
+    "val": {
+      "tag": "fl-val",
+      "n": 887,
+      "acc_18": 0.010146561443066516,
+      "binary_recall": 0.9851598173515982,
+      "binary_fpr": 0.09090909090909091,
+      "syn_recall": 0.0,
+      "threshold": 0.8,
+      "tp": 863,
+      "fp": 1,
+      "fn": 13,
+      "tn": 10
+    },
+    "test": {
+      "tag": "fl-test",
+      "n": 1089,
+      "acc_18": 0.1487603305785124,
+      "binary_recall": 0.9486887115165337,
+      "binary_fpr": 0.20754716981132076,
+      "syn_recall": null,
+      "threshold": 0.8,
+      "tp": 832,
+      "fp": 44,
+      "fn": 45,
+      "tn": 168
+    },
+    "rounds": 12,
+    "epochs_per_round": 3,
+    "nodes": [
+      "node_tcp",
+      "node_dns",
+      "node_udp"
+    ]
+  }
+}
