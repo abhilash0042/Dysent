@@ -31,8 +31,7 @@ class FLNode:
         local_data: Tuple[np.ndarray, np.ndarray],
         model_builder_fn,
         epochs_per_round: int = 5,
-        batch_size: int = 64,
-        class_weight: Optional[Dict] = None,
+        batch_size: int = 64
     ):
         """
         Initialize FL node.
@@ -49,7 +48,6 @@ class FLNode:
         self.model_builder = model_builder_fn
         self.epochs_per_round = epochs_per_round
         self.batch_size = batch_size
-        self.class_weight = class_weight
         
         # Create local model
         self.local_model = None
@@ -101,8 +99,7 @@ class FLNode:
             epochs=self.epochs_per_round,
             batch_size=self.batch_size,
             verbose=verbose,
-            validation_split=0.1,  # Use 10% for local validation
-            class_weight=getattr(self, 'class_weight', None),
+            validation_split=0.1  # Use 10% for local validation
         )
         
         # Extract final epoch metrics

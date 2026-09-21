@@ -113,20 +113,12 @@ def create_model_builder(input_shape, num_classes):
     return build_model
 
 
-DEFAULT_DATA_FILE = Path('data/processed/cicddos2019_full_processed.npz')
-DEFAULT_SELECTION_FILE = Path('data/processed/cicddos2019_full_processed_feature_selection.pkl')
-DEFAULT_MODEL_OUT = Path('models/fl_global_model_final.keras')
-
-
 def run_federated_learning_simulation(
     num_nodes: int = 5,
     num_rounds: int = 20,
     epochs_per_round: int = 5,
     iid: bool = True,
-    use_selected_features: bool = True,
-    data_file: Path = DEFAULT_DATA_FILE,
-    selection_file: Path = DEFAULT_SELECTION_FILE,
-    model_out: Path = DEFAULT_MODEL_OUT
+    use_selected_features: bool = True
 ):
     """
     Run complete FL simulation.
@@ -137,9 +129,6 @@ def run_federated_learning_simulation(
         epochs_per_round: Local training epochs per round
         iid: IID vs Non-IID data distribution
         use_selected_features: Use feature selection results
-        data_file: Processed NPZ holding 'X' and 'y'
-        selection_file: Pickle holding the ensemble feature indices
-        model_out: Where to write the trained global model
     """
     logger.info("\n" + "🚀"*35)
     logger.info("FEDERATED LEARNING SIMULATION")
@@ -148,18 +137,21 @@ def run_federated_learning_simulation(
     # ===== 1. Load Data and Features =====
     logger.info("Step 1: Loading data...")
     
+    data_file = Path('data/processed/cicddos2019_full_processed.npz')
     data = np.load(data_file)
     X, y = data['X'], data['y']
     
-    logger.info(f"Loaded: {X.shape[0]:,} samples, {X.shape[1]} features from {data_file.name}")
+    logger.info(f"Loaded: {X.shape[0]:,} samples, {X.shape[1]} features")
     
     # Apply feature selection if requested
     if use_selected_features:
         logger.info("\nApplying feature selection...")
+        selection_file = Path('data/processed/cicddos2019_full_processed_feature_selection.pkl')
         
         with open(selection_file, 'rb') as f:
             results = pickle.load(f)
         
+        # Use ensemble method (best performer: 98.92%)
         selected_indices = results['ensemble']['indices']
         X = X[:, selected_indices]
         
@@ -278,7 +270,7 @@ def run_federated_learning_simulation(
     logger.info("✅"*35)
     
     # Save final global model
-    save_path = Path(model_out)
+    save_path = Path("models/fl_global_model_final.keras")
     save_path.parent.mkdir(parents=True, exist_ok=True)
     global_model.save(save_path)
     logger.info(f"\n✓ Final global model saved: {save_path}")
@@ -288,36 +280,21 @@ def run_federated_learning_simulation(
 
 def main():
     """Run FL simulation with configurable parameters"""
-    import argparse
-
-    parser = argparse.ArgumentParser(description="Standard federated learning simulation")
-    parser.add_argument('--leakfree', action='store_true',
-                        help="Train on the leak-free artifacts produced by "
-                             "scripts/regenerate_leakfree_dataset.py")
-    parser.add_argument('--nodes', type=int, default=5)
-    parser.add_argument('--rounds', type=int, default=20)
-    parser.add_argument('--epochs', type=int, default=5)
-    parser.add_argument('--non-iid', action='store_true')
-    args = parser.parse_args()
-
-    if args.leakfree:
-        data_file = Path('data/processed/cicddos2019_leakfree_processed.npz')
-        selection_file = Path('data/processed/cicddos2019_leakfree_feature_selection.pkl')
-        model_out = Path('models/fl_global_model_leakfree.keras')
-    else:
-        data_file = DEFAULT_DATA_FILE
-        selection_file = DEFAULT_SELECTION_FILE
-        model_out = DEFAULT_MODEL_OUT
-
+    
+    # Configuration
+    NUM_NODES = 5  # Simulate 5 organizations
+    NUM_ROUNDS = 20  # 20 FL training rounds
+    EPOCHS_PER_ROUND = 5  # Each node trains for 5 epochs per round
+    IID_DISTRIBUTION = True  # True = balanced, False = imbalanced
+    USE_SELECTED_FEATURES = True  # Use 40 selected features (ensemble)
+    
+    # Run simulation
     fl_server, fl_nodes, global_model = run_federated_learning_simulation(
-        num_nodes=args.nodes,
-        num_rounds=args.rounds,
-        epochs_per_round=args.epochs,
-        iid=not args.non_iid,
-        use_selected_features=True,
-        data_file=data_file,
-        selection_file=selection_file,
-        model_out=model_out
+        num_nodes=NUM_NODES,
+        num_rounds=NUM_ROUNDS,
+        epochs_per_round=EPOCHS_PER_ROUND,
+        iid=IID_DISTRIBUTION,
+        use_selected_features=USE_SELECTED_FEATURES
     )
     
     return fl_server, fl_nodes, global_model

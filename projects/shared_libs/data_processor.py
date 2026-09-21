@@ -173,33 +173,17 @@ class FeatureExtractor:
         self.categorical_encoders = {}
         self.feature_names = []
         
-    # Ordered by preference: the first match becomes the training target. Every other
-    # match is a redundant view of the same ground truth and must be removed from X.
-    LABEL_CANDIDATES = ['label', 'Label', 'class', 'Class', 'attack', 'Attack']
-
     def _identify_label_column(self, df: pd.DataFrame) -> str:
         """Identify the label column from common names"""
-        for col in self.LABEL_CANDIDATES:
+        possible_labels = ['label', 'Label', 'class', 'Class', 'attack', 'Attack']
+        
+        for col in possible_labels:
             if col in df.columns:
                 return col
         
         # If not found, assume last column is label
         logger.warning("Label column not found, using last column")
         return df.columns[-1]
-
-    def _identify_leaky_columns(self, df: pd.DataFrame, label_col: str) -> List[str]:
-        """
-        Columns that must never reach the feature matrix.
-
-        CICDDoS2019 CSVs ship both 'Label' (attack name) and 'Class' (binary
-        benign/attack). Dropping only the target leaves the other one behind as an
-        input feature, which hands the model the answer. Saved CSV row indices
-        ('Unnamed: N') leak too, because the files are grouped by attack type.
-        """
-        leaky = [c for c in self.LABEL_CANDIDATES if c in df.columns and c != label_col]
-        leaky += [c for c in df.columns
-                  if isinstance(c, str) and c.startswith('Unnamed:') and c != label_col]
-        return leaky
     
     def preprocess(self, df: pd.DataFrame, fit: bool = True) -> Tuple[np.ndarray, np.ndarray]:
         """
@@ -224,11 +208,6 @@ class FeatureExtractor:
         # Separate features and labels
         y = df[label_col].values
         X = df.drop(columns=[label_col])
-
-        leaky_cols = self._identify_leaky_columns(df, label_col)
-        if leaky_cols:
-            logger.warning(f"Dropping leaky columns from features: {leaky_cols}")
-            X = X.drop(columns=leaky_cols)
         
         # Drop difficulty_level if exists (NSLKDD specific)
         if 'difficulty_level' in X.columns:
@@ -265,17 +244,13 @@ class FeatureExtractor:
                     logger.warning(f"No encoder for {col}, setting to 0")
                     X[col] = 0
         
-        # Capture names before the DataFrame becomes an array, so feature_names can
-        # never drift out of sync with the columns actually kept in X.
-        kept_columns = list(X.columns)
-
         # Convert to numpy array
         X = X.values.astype(np.float32)
         
         # Normalize features
         if fit:
             X = self.scaler.fit_transform(X)
-            self.feature_names = kept_columns
+            self.feature_names = list(df.drop(columns=[label_col]).columns)
         else:
             X = self.scaler.transform(X)
         
