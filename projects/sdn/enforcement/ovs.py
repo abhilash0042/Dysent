@@ -50,8 +50,17 @@ class OvsBackend(EnforcementBackend):
         return ok
 
     def rate_limit_ip(self, source_ip: str, kbps: int = 500, ttl_seconds: int = 120) -> bool:
-        # Meter-based rate limit is OVS-version dependent; log intent and soft-block high pps via note
-        logger.info('Rate limit %s to %d kbps (ttl=%ds)', source_ip, kbps, ttl_seconds)
+        """Install an OpenFlow meter when supported by the local OVS build."""
+        meter_id = (abs(hash(source_ip)) % 10000) + 1
+        meter_ok = self._run(['--may-exist', 'add-meter', self.switch,
+                              f'{meter_id},kbps,band=type=drop,rate={kbps}'])
+        flow_ok = self._run(['--may-exist', 'add-flow', self.switch,
+                              f'priority=65534,ip,nw_src={source_ip},nw_dst={self.protected_dst},'
+                              f'idle_timeout=60,hard_timeout={ttl_seconds},meter={meter_id},actions=normal'])
+        ok = meter_ok and flow_ok
+        logger.info('Rate limit %s to %d kbps (meter=%s, ttl=%ds)', source_ip, kbps, meter_id, ttl_seconds)
+        if not ok:
+            logger.warning('OVS meter installation failed; no rate-limit rule was claimed as installed')
         now = datetime.utcnow()
         self._local[source_ip] = BlockRule(
             source_ip=source_ip,
@@ -61,7 +70,7 @@ class OvsBackend(EnforcementBackend):
             installed_at=now.isoformat(),
             expires_at=(now + timedelta(seconds=ttl_seconds)).isoformat(),
         )
-        return True
+        return ok
 
     def revoke(self, source_ip: str) -> bool:
         self._run(['del-flows', self.switch, f'ip,nw_src={source_ip}'])

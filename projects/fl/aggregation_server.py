@@ -35,7 +35,10 @@ class FederatedServer:
         num_rounds: int = 20,
         min_nodes: int = 2,
         selection_fraction: float = 1.0,
-        save_dir: str = "./fl_checkpoints"
+        save_dir: str = "./fl_checkpoints",
+        aggregation_method: str = "fedavg",
+        num_byzantine: int = 0,
+        trim_ratio: float = 0.2,
     ):
         """
         Initialize FL server.
@@ -52,6 +55,9 @@ class FederatedServer:
         self.min_nodes = min_nodes
         self.selection_fraction = selection_fraction
         self.save_dir = Path(save_dir)
+        self.aggregation_method = aggregation_method.lower()
+        self.num_byzantine = int(num_byzantine)
+        self.trim_ratio = float(trim_ratio)
         self.save_dir.mkdir(parents=True, exist_ok=True)
         
         # Track registered nodes
@@ -67,6 +73,7 @@ class FederatedServer:
         logger.info(f"Total rounds: {num_rounds}")
         logger.info(f"Minimum nodes: {min_nodes}")
         logger.info(f"Selection fraction: {selection_fraction}")
+        logger.info(f"Aggregation: {self.aggregation_method} (f={self.num_byzantine})")
         
     def register_node(self, node_id: str, data_size: int) -> bool:
         """
@@ -140,6 +147,21 @@ class FederatedServer:
         
         return aggregated_weights
     
+    def aggregate(self, local_weights_list: List[List[np.ndarray]], data_sizes: List[int]) -> List[np.ndarray]:
+        """Dispatch to the configured FL aggregator."""
+        if not local_weights_list:
+            raise ValueError("No local updates received")
+        if self.aggregation_method == 'fedavg':
+            return self.federated_averaging(local_weights_list, data_sizes)
+        from projects.shared_libs.byzantine_defense import ByzantineRobustAggregator
+        if self.aggregation_method == 'krum':
+            return ByzantineRobustAggregator.krum(local_weights_list, self.num_byzantine)
+        if self.aggregation_method == 'median':
+            return ByzantineRobustAggregator.median(local_weights_list)
+        if self.aggregation_method in ('trimmed_mean', 'trimmedmean'):
+            return ByzantineRobustAggregator.trimmed_mean(local_weights_list, self.trim_ratio)
+        raise ValueError(f"Unknown aggregation method: {self.aggregation_method}")
+
     def run_round(
         self,
         local_updates: Dict[str, Dict]
@@ -172,9 +194,9 @@ class FederatedServer:
         
         logger.info(f"Received updates from {len(local_updates)} nodes")
         
-        # Perform FedAvg
-        logger.info("Aggregating model weights (FedAvg)...")
-        aggregated_weights = self.federated_averaging(local_weights_list, data_sizes)
+        # Perform configured aggregation. Malicious updates enter through the same path.
+        logger.info("Aggregating model weights (%s)...", self.aggregation_method)
+        aggregated_weights = self.aggregate(local_weights_list, data_sizes)
         
         # Update global model
         self.global_model.set_weights(aggregated_weights)
@@ -278,10 +300,10 @@ class SimpleFLServer:
     No REST API - direct Python function calls.
     """
     
-    def __init__(self, global_model, num_rounds=20):
+    def __init__(self, global_model, num_rounds=20, aggregation_method='fedavg', num_byzantine=0):
         self.server = FederatedServer(
-            global_model=global_model,
-            num_rounds=num_rounds
+            global_model=global_model, num_rounds=num_rounds,
+            aggregation_method=aggregation_method, num_byzantine=num_byzantine
         )
     
     def register_node(self, node_id, data_size):

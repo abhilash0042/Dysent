@@ -15,6 +15,25 @@ class ByzantineRobustAggregator:
     """Byzantine-resistant aggregation algorithms for FL"""
     
     @staticmethod
+    def fedavg(local_weights_list: List[List[np.ndarray]]) -> List[np.ndarray]:
+        """Standard Federated Averaging."""
+        if not local_weights_list:
+            raise ValueError("No local model updates supplied")
+
+        num_layers = len(local_weights_list[0])
+        aggregated = []
+
+        for layer_idx in range(num_layers):
+            layer_weights = np.asarray([
+                weights[layer_idx]
+                for weights in local_weights_list
+            ])
+
+            aggregated.append(np.mean(layer_weights, axis=0))
+
+        logger.info("✓ FedAvg aggregation computed")
+        return aggregated
+
     def krum(
         local_weights_list: List[List[np.ndarray]],
         num_byzantine: int = 1
@@ -154,6 +173,16 @@ class MaliciousNodeSimulator:
         
         return poisoned
     
+    @staticmethod
+    def sign_flip_attack(
+        weights: List[np.ndarray],
+        scale_factor: float = 1.0
+    ) -> List[np.ndarray]:
+        """Negate submitted weights/update tensors."""
+        poisoned = [-scale_factor * np.asarray(w) for w in weights]
+        logger.warning(f"⚠ Sign-flip attack: scale={scale_factor}")
+        return poisoned
+
     @staticmethod
     def model_poisoning_attack(
         weights: List[np.ndarray],
