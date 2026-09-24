@@ -47,11 +47,10 @@ BATCH_SIZE = 64
 # 0% = 0 malicious
 # 20% = 1 malicious
 # 40% = 2 malicious
-MALICIOUS_COUNTS = [0, 1, 2]
+MALICIOUS_COUNTS = [1, 2, 3]
 
 ATTACKS = [
     "sign_flip",
-    "scale",
     "gaussian",
 ]
 
@@ -543,32 +542,53 @@ def main():
                         f"seed={seed}"
                     )
 
-                    metrics = run_experiment(
-                        malicious_count=malicious_count,
-                        attack=attack,
-                        aggregator=aggregator,
-                        seed=seed,
-                    )
+                    try:
+                        metrics = run_experiment(
+                            malicious_count=malicious_count,
+                            attack=attack,
+                            aggregator=aggregator,
+                            seed=seed,
+                        )
 
-                    row = {
-                        "malicious_clients": malicious_count,
-                        "malicious_pct": malicious_pct,
-                        "attack": attack,
-                        "aggregator": aggregator,
-                        "seed": seed,
-                        **metrics,
-                    }
+                        row = {
+                            "malicious_clients": malicious_count,
+                            "malicious_pct": malicious_pct,
+                            "attack": attack,
+                            "aggregator": aggregator,
+                            "seed": seed,
+                            "status": "success",
+                            **metrics,
+                        }
 
-                    all_results.append(row)
+                        all_results.append(row)
 
-                    print(
-                        f"   FINAL | "
-                        f"F1={metrics['f1']:.4f} | "
+                        print(
+                            f"   FINAL | "
+                            f"F1={metrics['f1']:.4f} | "
                         f"Recall={metrics['recall']:.4f} | "
                         f"Precision={metrics['precision']:.4f} | "
                         f"FPR={metrics['fpr']:.4f} | "
                         f"MCC={metrics['mcc']:.4f}"
                     )
+
+                    except Exception as e:
+                        error_msg = f"{type(e).__name__}: {e}"
+
+                        failed_row = {
+                            "malicious_clients": malicious_count,
+                            "malicious_pct": malicious_pct,
+                            "attack": attack,
+                            "aggregator": aggregator,
+                            "seed": seed,
+                            "status": "failed",
+                            "error": error_msg,
+                        }
+
+                        all_results.append(failed_row)
+
+                        print(f"   FAILED | {error_msg}")
+                        print("   Continuing to next experiment...")
+
 
     RESULT_PATH.parent.mkdir(
         parents=True,
