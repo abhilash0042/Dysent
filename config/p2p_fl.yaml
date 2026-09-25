@@ -1,0 +1,50 @@
+# Phase 1 P2P federated learning — in-process gossip only.
+# This file does not configure FederatedServer or the SDN contract.
+
+transport: inprocess
+
+tcp:
+  host: 127.0.0.1
+  timeout_seconds: 15
+  max_message_bytes: 67108864
+
+training:
+  num_rounds: 20
+  epochs_per_round: 5
+  batch_size: 64
+  seed: 42
+
+model:
+  # FL training layout: 40 selected features reshaped to (10, 4).
+  # This is not the SDN contract shape (10, 40).
+  timesteps: 10
+  cnn_filters: [64, 128]
+  lstm_units: [64, 32]
+  dropout_rate: 0.5
+  learning_rate: 0.001
+
+data:
+  distribution: iid
+  test_size: 0.15
+  use_selected_features: true
+  processed_npz: data/processed/cicddos2019_full_processed.npz
+  feature_selection_pkl: data/processed/cicddos2019_full_processed_feature_selection.pkl
+  feature_selection_key: ensemble
+
+# Permissioned ring. A node accepts updates only from organizations listed here.
+organizations:
+  org_campus:
+    neighbors: [org_isp, org_gov]
+    port: 9101
+  org_isp:
+    neighbors: [org_campus, org_bank]
+    port: 9102
+  org_bank:
+    neighbors: [org_isp, org_cloud]
+    port: 9103
+  org_cloud:
+    neighbors: [org_bank, org_gov]
+    port: 9104
+  org_gov:
+    neighbors: [org_cloud, org_campus]
+    port: 9105
