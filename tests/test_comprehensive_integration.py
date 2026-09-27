@@ -203,25 +203,22 @@ class ComprehensiveIntegrationTest:
         logger.info(f"  Testing with {num_nodes} nodes ({num_nodes - honest_nodes} malicious)")
         
         # Apply defense
+        from projects.shared_libs.byzantine_defense import AggregationUnsupported
         try:
             aggregated = ByzantineRobustAggregator.krum(
                 list(updates.values()),
                 num_byzantine=num_nodes - honest_nodes
             )
-            logger.info(f"  ✓ Byzantine defense applied successfully")
-            
-            # Verify aggregated weights are not poisoned
-            max_magnitude = np.max(np.abs(aggregated[0]))
-            logger.info(f"  ✓ Aggregated weight magnitude: {max_magnitude:.4f}")
-            
-            # Should be closer to honest node's small values, not malicious large values
-            assert max_magnitude < 50.0, f"Defense failed: weights still poisoned ({max_magnitude})"
-            logger.info(f"  ✓ System survived 90% attack!")
-            
+        except AggregationUnsupported:
+            logger.info("  ✓ Krum refused: 9 of 10 clients is more than it can filter")
             return True
         except Exception as e:
             logger.error(f"  ❌ Defense failed under extreme attack: {e}")
             return False
+        max_magnitude = np.max(np.abs(aggregated[0]))
+        logger.info(f"  ✓ Aggregated weight magnitude: {max_magnitude:.4f}")
+        assert max_magnitude < 50.0, f"Defense failed: weights still poisoned ({max_magnitude})"
+        return True
     
     def test_blockchain_agent_integration(self) -> bool:
         """Test blockchain + multi-agent integration"""
