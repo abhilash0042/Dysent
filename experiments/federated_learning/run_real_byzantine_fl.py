@@ -22,7 +22,6 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from projects.shared_libs import CNNBiLSTMModel
 from projects.shared_libs.attack_suite import apply_weight_attack
-from projects.shared_libs.byzantine_defense import ByzantineRobustAggregator
 
 
 DATA_PATH = (
@@ -235,49 +234,24 @@ def partition_data(X, y, seed):
     ]
 
 
+CLIP_NORM = 1.0
+
+
 def aggregate(
     updates,
     method,
     num_byzantine,
 ):
-    """
-    Aggregate model UPDATE DELTAS.
+    """Aggregate update deltas. FedAvg stays unclipped; every other method clips first."""
+    from projects.shared_libs.byzantine_defense import aggregate_updates
 
-    The inputs are:
-        local_weights - global_weights
-
-    The return value is an aggregated update delta.
-    """
-
-    if method == "fedavg":
-        return ByzantineRobustAggregator.fedavg(
-            updates
-        )
-
-    if method == "krum":
-        return ByzantineRobustAggregator.krum(
-            updates,
-            num_byzantine=num_byzantine,
-        )
-
-    if method == "median":
-        return ByzantineRobustAggregator.median(
-            updates
-        )
-
-    if method == "trimmed_mean":
-        trim_ratio = min(
-            0.2,
-            num_byzantine / NUM_NODES,
-        )
-
-        return ByzantineRobustAggregator.trimmed_mean(
-            updates,
-            trim_ratio=trim_ratio,
-        )
-
-    raise ValueError(
-        f"Unknown aggregator: {method}"
+    trim_ratio = min(0.2, num_byzantine / max(NUM_NODES, 1))
+    return aggregate_updates(
+        updates,
+        method,
+        num_byzantine=num_byzantine,
+        trim_ratio=trim_ratio,
+        clip_norm=CLIP_NORM,
     )
 
 

@@ -59,6 +59,36 @@ def backdoor_labels(y: np.ndarray, target: int = 0, ratio: float = 0.1, seed: in
     return y2
 
 
+def average_updates(updates: List[Weights]) -> Weights:
+    return [
+        np.mean(np.stack([np.asarray(update[layer]) for update in updates], axis=0), axis=0)
+        for layer in range(len(updates[0]))
+    ]
+
+
+def adaptive_update(honest_updates: List[Weights], bias: float = 3.0) -> Weights:
+    """Push a small step opposite the honest mean, staying near that cluster.
+
+    Unlike sign-flip, the poisoned update is only a few honest-deviations away,
+    so a coordinate median can still be shifted when many clients collude.
+    """
+    if not honest_updates:
+        raise ValueError("adaptive attack needs at least one honest update")
+    flats = [np.concatenate([np.asarray(w, dtype=np.float64).ravel() for w in update]) for update in honest_updates]
+    mean = np.mean(np.stack(flats, axis=0), axis=0)
+    spread = float(np.mean([np.linalg.norm(flat - mean) for flat in flats]))
+    spread = max(spread, 1e-6)
+    direction = mean / (np.linalg.norm(mean) + 1e-12)
+    poisoned = mean - bias * spread * direction
+    out: Weights = []
+    pos = 0
+    for layer in honest_updates[0]:
+        size = np.asarray(layer).size
+        out.append(poisoned[pos:pos + size].reshape(np.asarray(layer).shape).astype(np.asarray(layer).dtype, copy=False))
+        pos += size
+    return out
+
+
 def apply_weight_attack(weights: Weights, attack: str, seed: int | None = None, **kwargs) -> Weights:
     attack = attack.lower().replace('-', '_')
     if attack in ('honest', 'none'):
