@@ -17,6 +17,20 @@ import pickle
 
 logger = logging.getLogger(__name__)
 
+# First match is the training target. Every other match is the same ground
+# truth under another name and has to leave X. CIC-DDoS2019 ships both
+# `Label` and `Class`, and `Inbound` is 1 exactly on attack rows.
+LABEL_CANDIDATES = ["label", "Label", "class", "Class", "attack", "Attack"]
+LEAKY_ID_COLUMNS = {
+    "unnamed: 0",
+    "flow id",
+    "source ip",
+    "destination ip",
+    "timestamp",
+    "simillarhttp",
+    "inbound",
+}
+
 
 class DatasetLoader:
     """Load and cache DDoS/IDS datasets"""
@@ -175,15 +189,30 @@ class FeatureExtractor:
         
     def _identify_label_column(self, df: pd.DataFrame) -> str:
         """Identify the label column from common names"""
-        possible_labels = ['label', 'Label', 'class', 'Class', 'attack', 'Attack']
-        
-        for col in possible_labels:
-            if col in df.columns:
-                return col
-        
-        # If not found, assume last column is label
+        lookup = {str(col).strip().lower(): col for col in df.columns}
+        for candidate in LABEL_CANDIDATES:
+            match = lookup.get(candidate.lower())
+            if match is not None:
+                return match
+
         logger.warning("Label column not found, using last column")
         return df.columns[-1]
+
+    def _drop_leak_columns(self, df: pd.DataFrame, label_col: str) -> pd.DataFrame:
+        """Drop every label alias and identifier that would leak the target."""
+        lookup = {str(col).strip().lower(): col for col in df.columns}
+        drop = {label_col}
+        for candidate in LABEL_CANDIDATES:
+            match = lookup.get(candidate.lower())
+            if match is not None:
+                drop.add(match)
+        for name, column in lookup.items():
+            if name in LEAKY_ID_COLUMNS:
+                drop.add(column)
+        leaked = sorted(drop - {label_col})
+        if leaked:
+            logger.info("Dropped leak columns from features: %s", leaked)
+        return df.drop(columns=list(drop))
     
     def preprocess(self, df: pd.DataFrame, fit: bool = True) -> Tuple[np.ndarray, np.ndarray]:
         """
@@ -198,16 +227,16 @@ class FeatureExtractor:
         """
         logger.info(f"Preprocessing dataset with {len(df)} records...")
         
-        # Make a copy
+        # Make a copy and strip the leading spaces CIC CSVs put on column names
         df = df.copy()
+        df.columns = [str(col).strip() for col in df.columns]
         
-        # Identify label column
+        # Identify label column, then remove every other copy of it
         label_col = self._identify_label_column(df)
         logger.info(f"Using '{label_col}' as label column")
         
-        # Separate features and labels
         y = df[label_col].values
-        X = df.drop(columns=[label_col])
+        X = self._drop_leak_columns(df, label_col)
         
         # Drop difficulty_level if exists (NSLKDD specific)
         if 'difficulty_level' in X.columns:
@@ -244,13 +273,14 @@ class FeatureExtractor:
                     logger.warning(f"No encoder for {col}, setting to 0")
                     X[col] = 0
         
-        # Convert to numpy array
+        # Names follow the column order that becomes the numpy matrix.
+        feature_names = [str(col) for col in X.columns]
         X = X.values.astype(np.float32)
         
         # Normalize features
         if fit:
             X = self.scaler.fit_transform(X)
-            self.feature_names = list(df.drop(columns=[label_col]).columns)
+            self.feature_names = feature_names
         else:
             X = self.scaler.transform(X)
         

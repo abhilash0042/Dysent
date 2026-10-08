@@ -52,20 +52,27 @@ class ComprehensiveDataLoader:
                 df = pd.read_csv(csv_file, nrows=self.samples_per_file, low_memory=False)
                 
                 logger.info(f"  Loaded {len(df)} rows")
-                
-                # Identify label column
+
+                # Drop every label alias and the columns that copy it.
+                # Unnamed: 0 is a row id. Inbound is 1 on attack rows.
+                df.columns = [str(col).strip() for col in df.columns]
                 label_col = None
-                for col in ['Label', 'label', ' Label']:
+                for col in ['Label', 'label', 'Class', 'class']:
                     if col in df.columns:
                         label_col = col
                         break
-                
                 if label_col is None:
-                    logger.warning(f"  No label column found, skipping...")
+                    logger.warning("  No label column found, skipping...")
                     continue
-                
-                # Extract features and labels
-                X = df.drop(columns=[label_col])
+                leak_names = {
+                    'unnamed: 0', 'flow id', 'source ip', 'destination ip',
+                    'timestamp', 'simillarhttp', 'inbound', 'label', 'class',
+                }
+                drop_cols = [
+                    col for col in df.columns
+                    if col == label_col or col.strip().lower() in leak_names
+                ]
+                X = df.drop(columns=drop_cols)
                 y = df[label_col]
                 
                 # Select only numeric features
@@ -77,7 +84,7 @@ class ComprehensiveDataLoader:
                 X = X.fillna(0)
                 
                 # Binary labels (0=benign, 1=attack)
-                y_binary = (y != 'BENIGN').astype(int)
+                y_binary = y.astype(str).str.strip().str.lower().ne('benign').astype(int)
                 
                 # Standardize to exactly 82 features (max common dimension)
                 X_values = X.values
@@ -116,28 +123,14 @@ class ComprehensiveDataLoader:
 
 
 def prepare_for_cnn_bilstm(X, y, num_features=40, timesteps=10):
-    """Prepare data for CNN-BiLSTM model"""
-    
-    logger.info("\nPreparing data for CNN-BiLSTM...")
-    
-    # Ensure exactly num_features
-    if X.shape[1] < num_features:
-        pad_size = num_features - X.shape[1]
-        X = np.pad(X, ((0, 0), (0, pad_size)), mode='constant')
-    elif X.shape[1] > num_features:
-        X = X[:, :num_features]
-    
-    logger.info(f"Features adjusted to: {num_features}")
-    
-    # Reshape to (samples, timesteps, features_per_timestep)
-    # For CNN-BiLSTM with (10, 40) input, repeat features across timesteps
-    num_samples = len(X)
-    X_single = X.reshape(num_samples, 1, num_features)
-    X_reshaped = np.repeat(X_single, timesteps, axis=1)
-    
-    logger.info(f"Reshaped to: {X_reshaped.shape}")
-    
-    return X_reshaped.astype(np.float32), y
+    """Reject flat rows. Repeating one vector across timesteps is not time."""
+    array = np.asarray(X)
+    if array.ndim == 3 and array.shape[1] == timesteps and array.shape[2] == num_features:
+        return array.astype(np.float32), y
+    raise ValueError(
+        "Refusing to repeat one flow vector across timesteps. "
+        f"Got {array.shape}. Use scripts.data.load_cicddos.load_temporal_splits()."
+    )
 
 
 def train_model(X_train, y_train, X_test, y_test):
@@ -149,7 +142,7 @@ def train_model(X_train, y_train, X_test, y_test):
     
     # Create model
     model_wrapper = CNNBiLSTMModel(
-        input_shape=(10, 40),
+        input_shape=X_train.shape[1:],
         num_classes=2,
         cnn_filters=(64, 32),
         lstm_units=(64,)
@@ -198,22 +191,17 @@ def train_model(X_train, y_train, X_test, y_test):
 
 
 def main():
-    """Main training pipeline"""
-    
-    # Step 1: Load data from all 18 files
-    loader = ComprehensiveDataLoader()
-    X_raw, y_raw = loader.load_all_files()
-    
-    # Step 2: Prepare for model
-    X, y = prepare_for_cnn_bilstm(X_raw, y_raw)
-    
-    # Step 3: Train/test split
-    logger.info("\nSplitting data...")
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, random_state=42, stratify=y
-    )
-    logger.info(f"Train: {len(X_train):,} samples")
-    logger.info(f"Test: {len(X_test):,} samples")
+    """Train on real 1-second windows, not a repeated flow vector."""
+    from scripts.data.load_cicddos import load_temporal_splits
+
+    logger.info("Loading per-source 1-second windows (leak columns excluded)")
+    splits = load_temporal_splits()
+    X_train = splits["X_train"]
+    X_test = splits["X_test"]
+    y_train = (splits["y_train"] != 0).astype(np.float32)
+    y_test = (splits["y_test"] != 0).astype(np.float32)
+    logger.info(f"Train: {X_train.shape}")
+    logger.info(f"Test: {X_test.shape}")
     
     # Step 4: Train model
     model, history = train_model(X_train, y_train, X_test, y_test)

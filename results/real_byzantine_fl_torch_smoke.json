@@ -1,0 +1,95 @@
+{
+  "config": {
+    "framework": "pytorch",
+    "device": "cuda",
+    "gpu": "NVIDIA GeForce RTX 4050 Laptop GPU",
+    "clients": 5,
+    "rounds": 5,
+    "local_epochs": 1,
+    "batch_size": 64,
+    "clip_norm": 1.0,
+    "dataset": "C:\\projects\\Dysent-1\\data\\processed\\cicddos2019_100k_reshaped_t10.npz",
+    "malicious_counts": [
+      2
+    ],
+    "attacks": [
+      "sign_flip"
+    ],
+    "aggregators": [
+      "fedavg",
+      "median",
+      "multi_krum"
+    ],
+    "seeds": [
+      0
+    ]
+  },
+  "rows": [
+    {
+      "malicious_clients": 2,
+      "malicious_pct": 40.0,
+      "attack": "sign_flip",
+      "aggregator": "fedavg",
+      "seed": 0,
+      "status": "success",
+      "model": "cnn_bilstm_torch",
+      "device": "cuda",
+      "accuracy": 0.8907333333333334,
+      "precision": 0.8761818319340443,
+      "recall": 0.9998273778698429,
+      "f1": 0.9339299391300843,
+      "pr_auc": 0.9999395002915152,
+      "fpr": 0.4794961921499707,
+      "mcc": 0.6747738592296516,
+      "balanced_accuracy": 0.760165592859936,
+      "tn": 1777,
+      "fp": 1637,
+      "fn": 2,
+      "tp": 11584
+    },
+    {
+      "malicious_clients": 2,
+      "malicious_pct": 40.0,
+      "attack": "sign_flip",
+      "aggregator": "median",
+      "seed": 0,
+      "status": "success",
+      "model": "cnn_bilstm_torch",
+      "device": "cuda",
+      "accuracy": 0.7726666666666666,
+      "precision": 0.7726060282742064,
+      "recall": 1.0,
+      "f1": 0.8717177037092769,
+      "pr_auc": 0.9979720867512879,
+      "fpr": 0.9988283538371412,
+      "mcc": 0.030086888978906816,
+      "balanced_accuracy": 0.5005858230814294,
+      "tn": 4,
+      "fp": 3410,
+      "fn": 0,
+      "tp": 11586
+    },
+    {
+      "malicious_clients": 2,
+      "malicious_pct": 40.0,
+      "attack": "sign_flip",
+      "aggregator": "multi_krum",
+      "seed": 0,
+      "status": "success",
+      "model": "cnn_bilstm_torch",
+      "device": "cuda",
+      "accuracy": 0.7724,
+      "precision": 0.7724,
+      "recall": 1.0,
+      "f1": 0.8715865493116678,
+      "pr_auc": 0.7865896896800977,
+      "fpr": 1.0,
+      "mcc": 0.0,
+      "balanced_accuracy": 0.5,
+      "tn": 0,
+      "fp": 3414,
+      "fn": 0,
+      "tp": 11586
+    }
+  ]
+}

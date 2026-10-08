@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import argparse
 import sys
 import json
 from pathlib import Path
@@ -42,29 +43,32 @@ NUM_ROUNDS = 5
 LOCAL_EPOCHS = 1
 BATCH_SIZE = 64
 
-# With 5 clients:
-# 0% = 0 malicious
-# 20% = 1 malicious
-# 40% = 2 malicious
-MALICIOUS_COUNTS = [1, 2, 3]
+# With 5 clients: 0 / 1 / 2 / 3 malicious => 0% / 20% / 40% / 60%
+MALICIOUS_COUNTS = [0, 1, 2, 3]
 
 ATTACKS = [
     "sign_flip",
     "gaussian",
+    "scale",
+    "random",
 ]
 
 AGGREGATORS = [
     "fedavg",
+    "fedavg_clip",
     "krum",
+    "multi_krum",
     "median",
     "trimmed_mean",
+    "bulyan",
+    "trust_weighted",
 ]
 
 SEEDS = [0, 1]
 
 
 def load_data():
-    print("\n📊 Loading CIC-DDoS2019...")
+    print("\nLoading CIC-DDoS2019...")
 
     data = np.load(DATA_PATH)
 
@@ -318,16 +322,17 @@ def generate_client_updates(
         ]
 
         # First N clients are Byzantine.
-        if client_index < malicious_count:
-
+        if client_index < malicious_count and attack != "none":
+            kwargs = {}
+            if attack == "gaussian":
+                kwargs["std"] = 0.1
+            if attack == "scale":
+                kwargs["factor"] = 10.0
             update = apply_weight_attack(
                 update,
                 attack,
-                seed=(
-                    seed
-                    + client_index
-                    + 1000
-                ),
+                seed=seed + client_index + 1000,
+                **kwargs,
             )
 
         client_updates.append(
@@ -462,118 +467,103 @@ def run_experiment(
     )
 
 
+def iter_experiments(malicious_counts, attacks, aggregators, seeds):
+    for malicious_count in malicious_counts:
+        malicious_pct = malicious_count / NUM_NODES * 100
+        trial_attacks = ["none"] if malicious_count == 0 else attacks
+        for attack in trial_attacks:
+            for aggregator in aggregators:
+                for seed in seeds:
+                    yield malicious_count, malicious_pct, attack, aggregator, seed
+
+
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--smoke", action="store_true", help="One quick CNN run")
+    parser.add_argument("--output", default=str(RESULT_PATH))
+    args = parser.parse_args()
+
+    malicious_counts = MALICIOUS_COUNTS
+    attacks = ATTACKS
+    aggregators = AGGREGATORS
+    seeds = SEEDS
+    if args.smoke:
+        malicious_counts = [2]
+        attacks = ["sign_flip"]
+        aggregators = ["fedavg", "median", "multi_krum"]
+        seeds = [0]
+
     print("=" * 70)
-    print(
-        " REAL CIC-DDOS2019 BYZANTINE FEDERATED LEARNING"
-    )
+    print(" REAL CIC-DDOS2019 BYZANTINE FEDERATED LEARNING (CNN)")
     print("=" * 70)
+    print(f"TensorFlow: {tf.__version__}")
+    print(f"Clients:    {NUM_NODES}")
+    print(f"Rounds:     {NUM_ROUNDS}")
+    print(f"Model:      CNN-BiLSTM on {DATA_PATH.name}")
 
-    print(
-        f"TensorFlow: {tf.__version__}"
-    )
-
-    print(
-        f"Clients:    {NUM_NODES}"
-    )
-
-    print(
-        f"Rounds:     {NUM_ROUNDS}"
-    )
-
-    total = (
-        len(MALICIOUS_COUNTS)
-        * len(ATTACKS)
-        * len(AGGREGATORS)
-        * len(SEEDS)
-    )
-
+    jobs = list(iter_experiments(malicious_counts, attacks, aggregators, seeds))
     all_results = []
-    experiment_number = 0
 
-    for malicious_count in MALICIOUS_COUNTS:
+    for experiment_number, (malicious_count, malicious_pct, attack, aggregator, seed) in enumerate(jobs, start=1):
 
-        malicious_pct = (
-            malicious_count
-            / NUM_NODES
-            * 100
+        print(
+            f"\n[{experiment_number}/{len(jobs)}] "
+            f"malicious={malicious_count}/{NUM_NODES} ({malicious_pct:.0f}%) | "
+            f"attack={attack} | aggregation={aggregator} | seed={seed}"
         )
 
-        for attack in ATTACKS:
+        from projects.shared_libs.byzantine_defense import AggregationUnsupported
 
-            for aggregator in AGGREGATORS:
+        try:
+            metrics = run_experiment(
+                malicious_count=malicious_count,
+                attack=attack,
+                aggregator=aggregator,
+                seed=seed,
+            )
+            row = {
+                "malicious_clients": malicious_count,
+                "malicious_pct": malicious_pct,
+                "attack": attack,
+                "aggregator": aggregator,
+                "seed": seed,
+                "status": "success",
+                "model": "cnn_bilstm",
+                **metrics,
+            }
+            all_results.append(row)
+            print(
+                f"   FINAL | F1={metrics['f1']:.4f} | Recall={metrics['recall']:.4f} | "
+                f"FPR={metrics['fpr']:.4f} | MCC={metrics['mcc']:.4f}"
+            )
+        except AggregationUnsupported as e:
+            all_results.append({
+                "malicious_clients": malicious_count,
+                "malicious_pct": malicious_pct,
+                "attack": attack,
+                "aggregator": aggregator,
+                "seed": seed,
+                "status": "unsupported",
+                "model": "cnn_bilstm",
+                "error": str(e),
+            })
+            print(f"   UNSUPPORTED | {e}")
+        except Exception as e:
+            all_results.append({
+                "malicious_clients": malicious_count,
+                "malicious_pct": malicious_pct,
+                "attack": attack,
+                "aggregator": aggregator,
+                "seed": seed,
+                "status": "failed",
+                "model": "cnn_bilstm",
+                "error": f"{type(e).__name__}: {e}",
+            })
+            print(f"   FAILED | {type(e).__name__}: {e}")
 
-                for seed in SEEDS:
-
-                    experiment_number += 1
-
-                    print(
-                        f"\n[{experiment_number}/{total}] "
-                        f"malicious={malicious_count}/{NUM_NODES} "
-                        f"({malicious_pct:.0f}%) | "
-                        f"attack={attack} | "
-                        f"aggregation={aggregator} | "
-                        f"seed={seed}"
-                    )
-
-                    try:
-                        metrics = run_experiment(
-                            malicious_count=malicious_count,
-                            attack=attack,
-                            aggregator=aggregator,
-                            seed=seed,
-                        )
-
-                        row = {
-                            "malicious_clients": malicious_count,
-                            "malicious_pct": malicious_pct,
-                            "attack": attack,
-                            "aggregator": aggregator,
-                            "seed": seed,
-                            "status": "success",
-                            **metrics,
-                        }
-
-                        all_results.append(row)
-
-                        print(
-                            f"   FINAL | "
-                            f"F1={metrics['f1']:.4f} | "
-                        f"Recall={metrics['recall']:.4f} | "
-                        f"Precision={metrics['precision']:.4f} | "
-                        f"FPR={metrics['fpr']:.4f} | "
-                        f"MCC={metrics['mcc']:.4f}"
-                    )
-
-                    except Exception as e:
-                        error_msg = f"{type(e).__name__}: {e}"
-
-                        failed_row = {
-                            "malicious_clients": malicious_count,
-                            "malicious_pct": malicious_pct,
-                            "attack": attack,
-                            "aggregator": aggregator,
-                            "seed": seed,
-                            "status": "failed",
-                            "error": error_msg,
-                        }
-
-                        all_results.append(failed_row)
-
-                        print(f"   FAILED | {error_msg}")
-                        print("   Continuing to next experiment...")
-
-
-    RESULT_PATH.parent.mkdir(
-        parents=True,
-        exist_ok=True,
-    )
-
-    with open(
-        RESULT_PATH,
-        "w",
-    ) as f:
-
+    out = Path(args.output)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    with open(out, "w") as f:
         json.dump(
             {
                 "config": {
@@ -581,22 +571,15 @@ def main():
                     "rounds": NUM_ROUNDS,
                     "local_epochs": LOCAL_EPOCHS,
                     "batch_size": BATCH_SIZE,
-                    "malicious_counts": MALICIOUS_COUNTS,
-                    "attacks": ATTACKS,
-                    "aggregators": AGGREGATORS,
-                    "seeds": SEEDS,
+                    "clip_norm": CLIP_NORM,
+                    "model": "CNN-BiLSTM",
+                    "dataset": str(DATA_PATH),
+                    "malicious_counts": malicious_counts,
+                    "attacks": attacks,
+                    "aggregators": aggregators,
+                    "seeds": seeds,
                     "attack_definition": (
-                        "Byzantine attacks operate on "
-                        "client model-update deltas: "
-                        "local_weights - global_weights."
-                    ),
-                    "comparison_definition": (
-                        "Each aggregator starts from the "
-                        "same initial model, client partition, "
-                        "malicious-client assignment and "
-                        "deterministic training configuration. "
-                        "After aggregation, subsequent global "
-                        "models may differ naturally."
+                        "Weight attacks poison client update deltas after local CNN training."
                     ),
                 },
                 "rows": all_results,
@@ -606,14 +589,9 @@ def main():
         )
 
     print("\n" + "=" * 70)
-    print(
-        " ✅ BYZANTINE FL EXPERIMENT COMPLETE"
-    )
+    print("CNN BYZANTINE FL EXPERIMENT COMPLETE")
     print("=" * 70)
-
-    print(
-        f"\nResults saved to:\n{RESULT_PATH}"
-    )
+    print(f"\nResults saved to:\n{out}")
 
 
 if __name__ == "__main__":

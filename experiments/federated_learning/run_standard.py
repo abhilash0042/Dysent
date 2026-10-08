@@ -12,7 +12,6 @@ project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 import numpy as np
-import pickle
 import logging
 
 logging.basicConfig(level=logging.INFO)
@@ -21,7 +20,7 @@ logger = logging.getLogger(__name__)
 from projects.shared_libs import CNNBiLSTMModel
 from projects.fl.aggregation_server import SimpleFLServer
 from projects.fl.fl_node_client import FLNode
-from scripts.data.load_cicddos import reshape_for_cnn_bilstm
+from scripts.data.load_cicddos import load_temporal_splits
 
 
 def split_data_for_nodes(
@@ -134,45 +133,23 @@ def run_federated_learning_simulation(
     logger.info("FEDERATED LEARNING SIMULATION")
     logger.info("🚀"*35 + "\n")
     
-    # ===== 1. Load Data and Features =====
-    logger.info("Step 1: Loading data...")
-    
-    data_file = Path('data/processed/cicddos2019_full_processed.npz')
-    data = np.load(data_file)
-    X, y = data['X'], data['y']
-    
-    logger.info(f"Loaded: {X.shape[0]:,} samples, {X.shape[1]} features")
-    
-    # Apply feature selection if requested
+    # ===== 1. Load real 1-second windows =====
+    # The old ensemble selection sat on cicddos2019_full_processed.npz and
+    # kept columns 0 (Unnamed: 0) and 78 (Class). Those are the label.
+    # use_selected_features is ignored so that file cannot be selected again.
+    logger.info("Step 1: Loading leak-free temporal windows...")
     if use_selected_features:
-        logger.info("\nApplying feature selection...")
-        selection_file = Path('data/processed/cicddos2019_full_processed_feature_selection.pkl')
-        
-        with open(selection_file, 'rb') as f:
-            results = pickle.load(f)
-        
-        # Use ensemble method (best performer: 98.92%)
-        selected_indices = results['ensemble']['indices']
-        X = X[:, selected_indices]
-        
-        logger.info(f"✓ Using {len(selected_indices)} selected features (ensemble method)")
+        logger.info("Ignoring leaky feature-selection indices; using the 40 contract features")
     
-    # Split into train/test
-    from sklearn.model_selection import train_test_split
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.15, random_state=42, stratify=y
-    )
+    splits = load_temporal_splits()
+    X_train_r = splits["X_train"]
+    y_train = splits["y_train"]
+    X_test_r = splits["X_test"]
+    y_test = splits["y_test"]
+    y = np.concatenate([y_train, splits["y_val"], y_test])
     
-    logger.info(f"Train: {len(X_train):,}, Test: {len(X_test):,}")
-    
-    # ===== 2. Reshape for CNN-BiLSTM =====
-    logger.info("\nStep 2: Reshaping data for CNN-BiLSTM...")
-    
-    timesteps = 10
-    X_train_r = reshape_for_cnn_bilstm(X_train, timesteps)
-    X_test_r = reshape_for_cnn_bilstm(X_test, timesteps)
-    
-    logger.info(f"Reshaped: {X_train_r.shape}")
+    logger.info(f"Train: {X_train_r.shape}, Test: {X_test_r.shape}")
+    logger.info("Step 2: Windows are already (samples, 10 seconds, 40 features)")
     
     # ===== 3. Split Data Across Nodes =====
     logger.info("\nStep 3: Creating node data splits...")
@@ -185,7 +162,7 @@ def run_federated_learning_simulation(
     # Create model builder
     model_builder = create_model_builder(
         input_shape=X_train_r.shape[1:],
-        num_classes=len(np.unique(y))
+        num_classes=int(np.max(y)) + 1
     )
     
     # Create global model

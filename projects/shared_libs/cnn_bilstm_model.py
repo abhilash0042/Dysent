@@ -73,8 +73,10 @@ class CNNBiLSTMModel:
             )(x)
             x = layers.BatchNormalization(name=f'bn_conv_{i+1}')(x)
             
-        # Max pooling to reduce dimensionality
-        x = layers.MaxPooling1D(pool_size=2, name='maxpool')(x)
+        # Pool only when the time axis is long enough. A single flow has
+        # length 1; pooling it by 2 would drop the only real observation.
+        if self.input_shape[0] >= 2:
+            x = layers.MaxPooling1D(pool_size=2, name='maxpool')(x)
         
         # Bidirectional LSTM layers for temporal learning
         for i, units in enumerate(self.lstm_units):
@@ -196,25 +198,17 @@ class ModelTrainer:
         Returns:
             Reshaped X and y
         """
-        num_samples, num_features = X.shape
-        
-        # Calculate number of features per timestep
-        features_per_timestep = num_features // timesteps
-        
-        if features_per_timestep * timesteps != num_features:
-            # Pad features to make it divisible
-            pad_size = (features_per_timestep * timesteps) - num_features
-            if pad_size > 0:
-                X = np.pad(X, ((0, 0), (0, pad_size)), mode='constant')
-                num_features = X.shape[1]
-                features_per_timestep = num_features // timesteps
-        
-        # Reshape to (num_samples, timesteps, features_per_timestep)
-        X_reshaped = X.reshape(num_samples, timesteps, features_per_timestep)
-        
-        logger.info(f"Reshaped data: {X.shape} -> {X_reshaped.shape}")
-        
-        return X_reshaped, y
+        array = np.asarray(X)
+        if array.ndim == 3 and array.shape[1] == timesteps and array.shape[2] > 1:
+            logger.info(f"Using real windows: {array.shape}")
+            return array, y
+
+        raise ValueError(
+            "CNN-BiLSTM expects windows shaped (samples, timesteps, features), "
+            f"got {array.shape}. Chopping a flat feature row into timesteps "
+            "is not time and is disabled. Load windows from "
+            "scripts.data.load_cicddos.load_temporal_splits()."
+        )
     
     def train(
         self,
@@ -435,7 +429,7 @@ class ModelEvaluator:
             y=y
         )
         
-        class_weights = {i: weights[i] for i in range(len(classes))}
+        class_weights = {int(cls): float(weight) for cls, weight in zip(classes, weights)}
         
         logger.info("Class weights:")
         for cls, weight in class_weights.items():

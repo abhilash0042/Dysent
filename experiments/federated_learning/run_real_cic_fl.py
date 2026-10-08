@@ -21,9 +21,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from projects.shared_libs import CNNBiLSTMModel
 from projects.shared_libs.byzantine_defense import ByzantineRobustAggregator
-
-
-DATA_PATH = PROJECT_ROOT / "data" / "processed" / "cicddos2019_100k_reshaped_t10.npz"
+from scripts.data.load_cicddos import load_temporal_splits
 
 NUM_NODES = 5
 NUM_ROUNDS = 5
@@ -32,10 +30,9 @@ BATCH_SIZE = 64
 
 
 def load_data():
-    print("\n📊 Loading processed CIC-DDoS2019 sequence data...")
-    print(f"   {DATA_PATH}")
+    print("\n📊 Loading leak-free 1-second CIC-DDoS2019 windows...")
 
-    data = np.load(DATA_PATH)
+    data = load_temporal_splits()
 
     X_train = data["X_train"].astype(np.float32)
     y_train = data["y_train"]
@@ -76,9 +73,9 @@ def load_data():
     return X_train, y_train, X_val, y_val, X_test, y_test
 
 
-def build_model():
+def build_model(input_shape=(10, 40)):
     wrapper = CNNBiLSTMModel(
-        input_shape=(10, 8),
+        input_shape=input_shape,
         num_classes=2,
         cnn_filters=(64, 32),
         lstm_units=(64,),

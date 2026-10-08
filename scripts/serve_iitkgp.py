@@ -21,6 +21,7 @@ ROOT = Path(__file__).resolve().parents[1]
 WEB = Path(r'c:\projects\IITKgp_KVCache-1\web')
 LOG = ROOT / 'results' / 'sdn' / 'iitkgp_access.json'
 PORT = int(os.environ.get('IITKGP_PORT', '8765'))
+BIND = os.environ.get('IITKGP_BIND', '127.0.0.1')
 
 _lines: list[dict] = []
 _last_flush = 0.0
@@ -153,12 +154,12 @@ class FragileHTTPServer(HTTPServer):
 def main():
     if not WEB.exists():
         raise SystemExit(f'IITKgp web folder missing: {WEB}')
-    httpd = FragileHTTPServer(('0.0.0.0', PORT), Handler)
+    httpd = FragileHTTPServer((BIND, PORT), Handler)
     try:
         httpd.socket.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 4096)
     except OSError:
         pass
-    print(f'IITKgp KV-Cache serving {WEB} on http://127.0.0.1:{PORT}', flush=True)
+    print(f'IITKgp KV-Cache serving {WEB} on http://{BIND}:{PORT} (gateway-only bind)', flush=True)
     print('SINGLE-THREAD + tiny backlog - a DDoS will stall this process.', flush=True)
     print('Request log -> results/sdn/iitkgp_access.json', flush=True)
     try:

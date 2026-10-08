@@ -46,6 +46,11 @@ SDN_CONSOLE_FILE = project_root / "results" / "sdn" / "iitkgp_console.json"
 IITKGP_ACCESS_FILE = project_root / "results" / "sdn" / "iitkgp_access.json"
 ATTACK_STATE_FILE = project_root / "results" / "sdn" / "attack_state.json"
 
+LAB_ALLOW_IP = os.environ.get('SDN_ALLOW_IP', '127.0.0.1')
+LAB_ATTACK_IP = os.environ.get('SDN_ATTACK_IP', '127.0.0.2')
+GATEWAY_PORT = 8091
+APP_PORT = 8765
+
 _attack_procs: list = []
 _gateway_procs: list = []
 _attack_lock = threading.Lock()
@@ -318,8 +323,17 @@ def sdn_ops():
             'switch': latest.get('switch'),
         }
 
+    status['allowlisted_source'] = LAB_ALLOW_IP
+    status['lab_attack_source'] = LAB_ATTACK_IP
+
     t_probe = time.time()
-    app_ok, app_code, app_err = _probe_url('http://127.0.0.1:8765/__ping')
+    if attack.get('mode') == 'direct':
+        probe_url = f'http://127.0.0.1:{APP_PORT}/__ping'
+    elif gw_live:
+        probe_url = f'http://127.0.0.1:{GATEWAY_PORT}/__ping'
+    else:
+        probe_url = f'http://127.0.0.1:{APP_PORT}/__ping'
+    app_ok, app_code, app_err = _probe_url(probe_url)
     probe_ms = int((time.time() - t_probe) * 1000)
     gw_health = status.get('app_health') or {}
     died_at = status.get('app_down_at_request')
@@ -364,13 +378,20 @@ def sdn_ops():
 
 @app.route('/api/sdn/attack/start', methods=['POST'])
 def sdn_attack_start():
-    """Lab-only: flood the local IITKgp demo (127.0.0.1)."""
+    """Lab-only: flood the local IITKgp demo."""
     body = request.get_json(silent=True) or {}
-    mode = body.get('mode', 'direct')
+    mode = body.get('mode', 'sdn')
     if mode == 'sdn':
-        url = 'http://127.0.0.1:8091/'
+        _ensure_loopback_alias()
+        _ensure_iitkgp()
+        _ensure_gateway()
+        url = f'http://127.0.0.1:{GATEWAY_PORT}/'
+        bind = LAB_ATTACK_IP
+        label = 'Application via SDN'
     else:
-        url = 'http://127.0.0.1:8765/'
+        url = f'http://127.0.0.1:{APP_PORT}/'
+        bind = None
+        label = 'No SDN (direct to app)'
     script = project_root / 'scripts' / 'ddos_stress_test.py'
     with _attack_lock:
         _stop_attacks_locked()
@@ -378,11 +399,9 @@ def sdn_attack_start():
         creation = 0
         if sys.platform == 'win32':
             creation = subprocess.CREATE_NEW_PROCESS_GROUP
-        # Direct = occupy only until Stop. Hybrid GET flood keeps the
-        # single-thread app alive and is reserved for the SDN button.
         nproc = 2 if mode == 'sdn' else 1
         if mode == 'sdn':
-            cmd = [sys.executable, str(script), '--url', url, '--hybrid', '--hold', '180',
+            cmd = [sys.executable, str(script), '--url', url, '--bind', bind, '--hybrid', '--hold', '180',
                    '--slowloris', '80', '--workers', '80', '--per-round', '400']
         else:
             cmd = [sys.executable, str(script), '--url', url, '--crash', '--hold', '7200', '--slowloris', '3']
@@ -400,14 +419,16 @@ def sdn_attack_start():
             'running': True,
             'mode': mode,
             'url': url,
+            'source_ip': bind or LAB_ALLOW_IP,
             'pids': procs,
             'started_at': datetime.now().isoformat(),
         })
     return jsonify({
         'ok': True,
-        'message': f'CRASH flood started on {url} ({len(procs)} occupy workers)',
+        'message': f'{label}: flood on {url} from {bind or LAB_ALLOW_IP} ({len(procs)} workers)',
         'pids': procs,
         'mode': mode,
+        'source_ip': bind or LAB_ALLOW_IP,
     })
 
 
@@ -444,34 +465,61 @@ def _spawn(cmd, extra_env=None):
     )
 
 
+def _ensure_loopback_alias() -> bool:
+    """Add 127.0.0.2 on loopback so the lab attacker != the browser."""
+    try:
+        if sys.platform == 'win32':
+            chk = subprocess.run(
+                ['netsh', 'interface', 'ipv4', 'show', 'addresses', 'Loopback Pseudo-Interface 1'],
+                capture_output=True, text=True, timeout=8,
+            )
+            if LAB_ATTACK_IP in (chk.stdout or ''):
+                return True
+            add = subprocess.run(
+                ['netsh', 'interface', 'ipv4', 'add', 'address',
+                 'Loopback Pseudo-Interface 1', LAB_ATTACK_IP, '255.255.255.255'],
+                capture_output=True, text=True, timeout=8,
+            )
+            return add.returncode == 0 or LAB_ATTACK_IP in (add.stderr or '')
+        chk = subprocess.run(['ip', '-4', 'addr', 'show', 'dev', 'lo'], capture_output=True, text=True, timeout=5)
+        if LAB_ATTACK_IP in (chk.stdout or ''):
+            return True
+        add = subprocess.run(['ip', 'addr', 'add', f'{LAB_ATTACK_IP}/8', 'dev', 'lo'], capture_output=True, text=True, timeout=5)
+        return add.returncode == 0
+    except Exception:
+        return False
+
+
 def _ensure_iitkgp() -> bool:
-    if _port_open(8765):
+    if _port_open(APP_PORT):
         return True
     _spawn([sys.executable, str(project_root / 'scripts' / 'serve_iitkgp.py')])
     for _ in range(20):
         time.sleep(0.25)
-        if _port_open(8765):
+        if _port_open(APP_PORT):
             return True
-    return _port_open(8765)
+    return _port_open(APP_PORT)
 
 
 def _ensure_gateway() -> bool:
     global _gateway_procs
-    if _port_open(8091):
+    if _port_open(GATEWAY_PORT):
         return True
+    _ensure_loopback_alias()
     p = _spawn([
         sys.executable, str(project_root / 'experiments' / 'mininet' / 'run_live_defense.py'),
-        '--port', '8091',
-        '--upstream', '127.0.0.1:8765',
+        '--bind', '127.0.0.1',
+        '--port', str(GATEWAY_PORT),
+        '--upstream', f'127.0.0.1:{APP_PORT}',
         '--pps-threshold', '40',
-        '--allow-localhost-block',
+        '--allow', LAB_ALLOW_IP,
     ])
     _gateway_procs.append(p)
     for _ in range(90):
         time.sleep(0.5)
-        if _port_open(8091):
+        if _port_open(GATEWAY_PORT):
             return True
-    return _port_open(8091)
+    return _port_open(GATEWAY_PORT)
 
 
 @app.route('/api/sdn/apply', methods=['POST'])
@@ -481,19 +529,20 @@ def sdn_apply_framework():
         killed = _stop_attacks_locked()
     app_up = _ensure_iitkgp()
     gw_up = _ensure_gateway()
+    attack_ip = LAB_ATTACK_IP
     rec = append_block({
-        'source_ip': '127.0.0.1',
+        'source_ip': attack_ip,
         'action': 'block',
         'attack_class': 'Slowloris',
         'attack_score': 0.99,
         'pps': 0,
-        'reason': 'Operator applied SDN after live hang — attacker blocked on :8091, app :8765 restored',
+        'reason': f'Operator applied SDN — attacker {attack_ip} blocked on :{GATEWAY_PORT}, app :{APP_PORT} restored',
         'switch': 'composite:app_gateway',
         'ttl_seconds': 300,
     })
     write_command({
         'op': 'block',
-        'ip': '127.0.0.1',
+        'ip': attack_ip,
         'attack_class': 'Slowloris',
         'attack_score': 0.99,
         'reason': rec['reason'],
@@ -502,7 +551,7 @@ def sdn_apply_framework():
     recovered = False
     last_err = ''
     for _ in range(16):
-        ok, code, err = _probe_url('http://127.0.0.1:8765/__ping', timeout=1.2)
+        ok, code, err = _probe_url(f'http://127.0.0.1:{GATEWAY_PORT}/__ping', timeout=1.2)
         last_err = err or str(code)
         if ok:
             recovered = True
@@ -511,9 +560,9 @@ def sdn_apply_framework():
     return jsonify({
         'ok': recovered,
         'message': (
-            'SDN applied — IITKgp serving again. Attacker 127.0.0.1 blocked on :8091.'
+            f'SDN applied — IITKgp serving via :{GATEWAY_PORT}. Attacker {attack_ip} blocked.'
             if recovered else
-            f'SDN applied but app probe still failing ({last_err}). Try reload :8765.'
+            f'SDN applied but gateway probe still failing ({last_err}). Try reload :{GATEWAY_PORT}.'
         ),
         'killed_attack_pids': killed,
         'gateway_up': gw_up,

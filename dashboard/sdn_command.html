@@ -88,7 +88,7 @@
       <div class="meta">
         <div id="stamp" class="stamp">APP UNKNOWN</div>
         <div id="clock"></div>
-        <div>gateway :8091 → app :8765</div>
+        <div>browser <span id="allowIp">127.0.0.1</span> · gateway :8091 → app :8765</div>
       </div>
     </header>
 
@@ -96,15 +96,15 @@
       <div class="col">
         <div class="panel">
           <h2>Launch attack</h2>
-          <p style="font-size:11px;margin-bottom:10px;"><b>1.</b> Attack IITKgp — app hangs (Disable cache, then reload :8765).<br/><b>2.</b> Apply SDN — occupy stops, :8765 serves again, attacker is blocked on :8091.</p>
-          <button class="btn" id="atkBtn" onclick="startAttack('direct')">Attack IITKgp — crash it</button>
-          <button class="btn sec" id="sdnBtn" onclick="applySdn()">Apply SDN framework</button>
+          <p style="font-size:11px;margin-bottom:10px;"><b>1.</b> Attack web — IITKgp on :8765 hangs.<br/><b>2.</b> Apply SDN — flood stops, site serves again, attacker is blocked.<br/><b>3.</b> Stop attack — end the run.</p>
+          <button class="btn" id="atkBtn" onclick="startAttack('direct')">Attack web</button>
+          <button class="btn sec" id="sdnBtn" onclick="applySdn()">Apply SDN</button>
           <button class="btn stop" style="margin-top:8px;font-size:13px;padding:10px;" onclick="stopAttack()">Stop attack</button>
           <div id="atkState" class="label" style="margin-top:10px;">idle</div>
         </div>
         <div class="panel" style="flex:1;">
-          <h2>Live fetch :8765</h2>
-          <div class="label">Cache-bust probe (ignore a cached IITKgp tab)</div>
+          <h2>Live fetch via gateway</h2>
+          <div class="label">Cache-bust probe on :8091 (protected path)</div>
           <div class="giant" id="diedAt">—</div>
           <div class="label" id="diedNote">Waiting for a hang</div>
         </div>
@@ -148,7 +148,7 @@
     </div>
 
     <footer>
-      <div>Open IITKgp: http://localhost:8765 · Protected: http://localhost:8091</div>
+      <div>Protected (use this): http://localhost:8091 · Direct app (lab only): http://localhost:8765</div>
       <div>This board is not the FL pipeline UI — dedicated SDN command surface</div>
     </footer>
   </div>
@@ -200,24 +200,24 @@
       if (up) {
         document.getElementById('diedAt').textContent = (ms != null ? ms + 'ms' : '—');
         document.getElementById('diedAt').className = 'giant';
-        document.getElementById('diedNote').textContent = 'IITKgp answered this poll. Hard-refresh :8765 if the tab still looks cached.';
+        document.getElementById('diedNote').textContent = 'IITKgp answered via :8091. Open http://localhost:8091 for the protected site.';
       } else {
         document.getElementById('diedAt').textContent = 'TIMEOUT';
         document.getElementById('diedAt').className = 'giant down';
-        document.getElementById('diedNote').textContent = 'New requests to :8765 are hanging. Cached SPA tabs can still look “fine”.';
+        document.getElementById('diedNote').textContent = 'Protected path failing — app may be hung (direct attack) or gateway is down.';
       }
       const p = s.last_prediction;
       if (s.state === 'GATEWAY_OFF' || !ops.gateway_live) {
         document.getElementById('predClass').textContent = 'SDN GATEWAY OFF';
-        document.getElementById('predMeta').textContent = 'Not showing old DrDoS / RATE_LIMIT / served=57. Crash the app on :8765 first.';
-        document.getElementById('atkIp').textContent = '—';
+        document.getElementById('predMeta').textContent = 'Start the SDN gateway, then use Attack via SDN.';
+        document.getElementById('atkIp').textContent = s.lab_attack_source || '127.0.0.2';
         document.getElementById('nAtk').className = 'node';
         document.getElementById('nSw').className = 'node';
       } else if (p) {
         document.getElementById('predClass').textContent = p.attack_class + '  ·  ' + (p.action || '').toUpperCase();
         document.getElementById('predMeta').textContent =
           `score ${p.attack_score} · ${p.pps} events/s · ${p.reason || ''} · switch ${p.switch || s.backend || ''}`;
-        document.getElementById('atkIp').textContent = p.source_ip || '—';
+        document.getElementById('atkIp').textContent = p.source_ip || s.lab_attack_source || '127.0.0.2';
         document.getElementById('nAtk').className = 'node' + (p.action === 'block' ? ' hit' : '');
         document.getElementById('nSw').className = 'node' + (p.action === 'block' ? ' hit' : '');
       } else {
@@ -231,7 +231,7 @@
       tb.innerHTML = rules.length ? rules.map(r => {
         const t = (r.timestamp || r.installed_at || '').split('T')[1]?.slice(0,8) || '';
         return `<tr><td>${t}</td><td>${r.source_ip || '—'}</td><td>${(r.action || '').toUpperCase()}</td><td>${r.attack_class || '—'}</td><td>${r.reason || r.switch || '—'}</td></tr>`;
-      }).join('') : '<tr><td colspan="5">No blocks yet — attack, then Apply SDN</td></tr>';
+      }).join('') : '<tr><td colspan="5">No blocks yet — SDN auto-blocks on Attack via SDN</td></tr>';
 
       const lines = []
         .concat(ops.iitkgp || [])
@@ -244,7 +244,9 @@
         const t = (l.timestamp || '').split('T')[1]?.slice(0,8) || '';
         const body = l.line || l.detail || '';
         return `<div class="${cls}">${t}  ${(l.ip||'app')}  ${k}  ${body}</div>`;
-      }).join('') || '<div>Waiting for IITKgp hits… open http://localhost:8765</div>';
+      }).join('') || '<div>Waiting for IITKgp hits… open http://localhost:8091</div>';
+
+      if (s.allowlisted_source) document.getElementById('allowIp').textContent = s.allowlisted_source;
       box.scrollTop = box.scrollHeight;
 
       if (ops.attack) {

@@ -8,13 +8,12 @@ import sys
 from pathlib import Path
 
 # Add project root to path
-project_root = Path(__file__).parent.parent.parent.parent
+project_root = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(project_root))
 
 
 import sys
 import numpy as np
-import pickle
 from pathlib import Path
 import logging
 
@@ -24,9 +23,9 @@ logger = logging.getLogger(__name__)
 sys.path.insert(0, str(Path(__file__).parent))
 
 from projects.shared_libs import (
-    CNNBiLSTMModel, ModelTrainer, ModelEvaluator, split_data
+    CNNBiLSTMModel, ModelTrainer, ModelEvaluator
 )
-from load_dataset import reshape_for_cnn_bilstm
+from scripts.data.load_cicddos import load_temporal_splits
 
 
 def main():
@@ -34,81 +33,25 @@ def main():
     logger.info("Training CNN-BiLSTM with Selected Features")
     logger.info("="*70)
     
-    # Load selection results
-    possible_files = [
-        Path("data/processed/cicddos2019_full_processed_feature_selection.pkl"),
-        Path("data/processed/comprehensive_feature_selection.pkl"),
-        Path("data/processed/advanced_feature_selection_25features.pkl")
-    ]
+    # The old selection file's ensemble indices include Unnamed: 0 and Class.
+    # Training uses the 40 contract features as 10 real seconds instead.
+    splits = load_temporal_splits()
+    X_train_r = splits["X_train"]
+    X_val_r = splits["X_val"]
+    X_test_r = splits["X_test"]
+    y_train = splits["y_train"]
+    y_val = splits["y_val"]
+    y_test = splits["y_test"]
+    method = "temporal_40"
+    y = np.concatenate([y_train, y_val, y_test])
     
-    selection_file = None
-    for file_path in possible_files:
-        if file_path.exists():
-            selection_file = file_path
-            logger.info(f"Found: {selection_file}")
-            break
-    
-    if not selection_file:
-        logger.error("No feature selection results found!")
-        logger.info("Please run: python run_multi_dataset_selection.py")
-        return 1
-    
-    with open(selection_file, 'rb') as f:
-        results = pickle.load(f)
-    
-    # Choose method
-    print("\nWhich selection method to use?")
-    for i, method in enumerate(results.keys(), 1):
-        # Safely get number of features
-        num_features = results[method].get('num_features', len(results[method].get('indices', [])))
-        time_taken = results[method].get('time', 0)
-        print(f"{i}. {method}: {num_features} features ({time_taken:.1f}s)")
-    
-    
-    choice = int(input("\nEnter choice: ").strip()) - 1
-    method = list(results.keys())[choice]
-    selected_indices = results[method]['indices']
-    
-    logger.info(f"\nUsing {method}: {len(selected_indices)} features")
-    
-    # Load data
-    data_file = Path('data/processed/cicddos2019_full_processed.npz')
-    if not data_file.exists():
-        logger.error(f"Processed data not found: {data_file}")
-        logger.info("Please run: python load_dataset.py first")
-        return 1
-    
-    data = np.load(data_file)
-    X, y = data['X'], data['y']
-    
-    # Apply selection
-    X_selected = X[:, selected_indices]
-    logger.info(f"Reduced from {X.shape[1]} to {X_selected.shape[1]} features")
-    
-    # Split
-    X_train, X_val, X_test, y_train, y_val, y_test = split_data(
-        X_selected, y,
-        train_ratio=0.7,
-        val_ratio=0.15,
-        test_ratio=0.15
-    )
-    
-    logger.info(f"Train: {len(X_train):,}, Val: {len(X_val):,}, Test: {len(X_test):,}")
-    
-    # Reshape for CNN-BiLSTM
-    timesteps = 10
-    logger.info(f"\nReshaping for CNN-BiLSTM ({timesteps} timesteps)...")
-    X_train_r = reshape_for_cnn_bilstm(X_train, timesteps)
-    X_val_r = reshape_for_cnn_bilstm(X_val, timesteps)
-    X_test_r = reshape_for_cnn_bilstm(X_test, timesteps)
-    
-    logger.info(f"Reshaped shape: {X_train_r.shape}")
+    logger.info(f"Train: {X_train_r.shape}, Val: {X_val_r.shape}, Test: {X_test_r.shape}")
     
     # Create model
     logger.info("\nCreating CNN-BiLSTM model...")
     model = CNNBiLSTMModel(
         input_shape=X_train_r.shape[1:],
-        num_classes=len(np.unique(y)),
+        num_classes=int(np.max(y)) + 1,
         cnn_filters=(64, 128),
         lstm_units=(64, 32),
         dropout_rate=0.5
@@ -123,7 +66,7 @@ def main():
     trainer = ModelTrainer(model, model_dir=str(save_dir))
     
     # Compute class weights for imbalanced data
-    class_weights = ModelEvaluator.compute_class_weights(y_train, len(np.unique(y)))
+    class_weights = ModelEvaluator.compute_class_weights(y_train, int(np.max(y)) + 1)
     
     logger.info("\n" + "="*70)
     logger.info("Training Model")
@@ -149,7 +92,7 @@ def main():
     detailed = ModelEvaluator.compute_metrics(
         y_test,
         predictions,
-        len(np.unique(y))
+        int(np.max(y)) + 1
     )
     
     # Results
@@ -157,7 +100,7 @@ def main():
     logger.info("FINAL RESULTS")
     logger.info("="*70)
     logger.info(f"Selection Method: {method}")
-    logger.info(f"Features Used: {len(selected_indices)}/{X.shape[1]} ({len(selected_indices)/X.shape[1]*100:.1f}%)")
+    logger.info(f"Features Used: {X_train_r.shape[-1]} per second x {X_train_r.shape[1]} seconds")
     logger.info(f"\nTest Performance:")
     logger.info(f"  Accuracy:  {detailed['accuracy']:.4f}")
     logger.info(f"  Precision: {detailed['precision']:.4f}")

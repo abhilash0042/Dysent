@@ -4,7 +4,7 @@
     10,
     40
   ],
-  "observations": 111,
+  "observations": 0,
   "actions_taken": 2,
   "blocked_ips": [],
   "packets_blocked": 0,
@@ -31,21 +31,21 @@
       "packets_blocked_total": 0
     }
   },
-  "served": 134,
+  "served": 100,
   "discarded": 0,
-  "failed_upstream": 0,
+  "failed_upstream": 6,
   "last_prediction": {
-    "source_ip": "127.0.0.1",
+    "source_ip": "127.0.0.2",
     "attack_class": "Slowloris",
     "attack_score": 0.99,
     "pps": 0,
     "action": "block",
-    "reason": "Operator applied SDN after live hang \u2014 attacker blocked on :8091, app :8765 restored",
+    "reason": "Operator applied SDN \u2014 attacker 127.0.0.2 blocked on :8091, app :8765 restored",
     "switch": "composite:app_gateway+nftables+windows_firewall"
   },
   "app_health": {
     "ok": true,
-    "latency_ms": 6,
+    "latency_ms": 4,
     "status": "UP",
     "fail_streak": 0,
     "error": ""
@@ -53,7 +53,12 @@
   "app_down_at_request": null,
   "protected_app": "127.0.0.1:8765",
   "listen_port": 8091,
+  "allowlisted_sources": [
+    "127.0.0.1",
+    "::1",
+    "localhost"
+  ],
   "sdn_applied": true,
-  "timestamp": "2026-09-21T15:34:07.104195Z",
+  "timestamp": "2026-10-08T10:33:33.085968Z",
   "state": "ACTIVE"
 }

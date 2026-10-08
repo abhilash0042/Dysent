@@ -1,0 +1,80 @@
+{
+  "config": {
+    "clients": 5,
+    "rounds": 5,
+    "local_epochs": 1,
+    "batch_size": 64,
+    "clip_norm": 1.0,
+    "model": "CNN-BiLSTM",
+    "dataset": "C:\\projects\\Dysent-1\\data\\processed\\cicddos2019_100k_reshaped_t10.npz",
+    "malicious_counts": [
+      2
+    ],
+    "attacks": [
+      "sign_flip"
+    ],
+    "aggregators": [
+      "fedavg",
+      "median",
+      "multi_krum"
+    ],
+    "seeds": [
+      0
+    ],
+    "attack_definition": "Weight attacks poison client update deltas after local CNN training."
+  },
+  "rows": [
+    {
+      "malicious_clients": 2,
+      "malicious_pct": 40.0,
+      "attack": "sign_flip",
+      "aggregator": "fedavg",
+      "seed": 0,
+      "status": "success",
+      "model": "cnn_bilstm",
+      "accuracy": 0.8376,
+      "precision": 0.8263661007276359,
+      "recall": 0.9998273778698429,
+      "f1": 0.9048586158412748,
+      "pr_auc": 0.9999438930231495,
+      "fpr": 0.7129466900995899,
+      "mcc": 0.4862964085208412,
+      "balanced_accuracy": 0.6434403438851265,
+      "tn": 980,
+      "fp": 2434,
+      "fn": 2,
+      "tp": 11584
+    },
+    {
+      "malicious_clients": 2,
+      "malicious_pct": 40.0,
+      "attack": "sign_flip",
+      "aggregator": "median",
+      "seed": 0,
+      "status": "success",
+      "model": "cnn_bilstm",
+      "accuracy": 0.8289333333333333,
+      "precision": 0.8352162925524008,
+      "recall": 0.9698774382875884,
+      "f1": 0.8975239616613419,
+      "pr_auc": 0.9761928522657899,
+      "fpr": 0.6493848857644992,
+      "mcc": 0.44196309480362317,
+      "balanced_accuracy": 0.6602462762615446,
+      "tn": 1197,
+      "fp": 2217,
+      "fn": 349,
+      "tp": 11237
+    },
+    {
+      "malicious_clients": 2,
+      "malicious_pct": 40.0,
+      "attack": "sign_flip",
+      "aggregator": "multi_krum",
+      "seed": 0,
+      "status": "failed",
+      "model": "cnn_bilstm",
+      "error": "MemoryError: bad allocation"
+    }
+  ]
+}

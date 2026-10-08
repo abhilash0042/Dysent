@@ -118,6 +118,19 @@ class LiveGateway:
         })
         logger.info('%s %s %s', kind, ip, detail)
 
+    def _status_extra(self) -> dict:
+        return {
+            'served': self.served,
+            'discarded': self.discarded,
+            'failed_upstream': self.failed_upstream,
+            'last_prediction': self.last_prediction,
+            'app_health': self.health,
+            'app_down_at_request': self.app_down_at_request,
+            'protected_app': self.upstream,
+            'listen_port': self.listen_port,
+            'allowlisted_sources': sorted(self.allowlist),
+        }
+
     async def handle(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
         ip = _peer_ip(writer)
         if ip:
@@ -288,16 +301,7 @@ class LiveGateway:
                     self._log('PREDICT', ip, f'{act.attack_class} score={act.attack_score:.2f} → {act.action.value}')
                 if act and act.action == ActionType.BLOCK:
                     logger.warning('LIVE BLOCK %s — further requests will be discarded', ip)
-            extra = {
-                'served': self.served,
-                'discarded': self.discarded,
-                'failed_upstream': self.failed_upstream,
-                'last_prediction': self.last_prediction,
-                'app_health': self.health,
-                'app_down_at_request': self.app_down_at_request,
-                'protected_app': self.upstream,
-                'listen_port': self.listen_port,
-            }
+            extra = self._status_extra()
             await loop.run_in_executor(None, lambda: self.ctrl.flush_status(extra))
 
     async def health_loop(self):
@@ -325,16 +329,7 @@ class LiveGateway:
                     self.app_down_since = time.time()
                     self.app_down_at_request = self.served + self.discarded
                     self._log('APP_DOWN', '-', f'IITKgp stopped serving after {self.app_down_at_request} observed requests ({err})')
-            extra = {
-                'served': self.served,
-                'discarded': self.discarded,
-                'failed_upstream': self.failed_upstream,
-                'last_prediction': self.last_prediction,
-                'app_health': self.health,
-                'app_down_at_request': self.app_down_at_request,
-                'protected_app': self.upstream,
-                'listen_port': self.listen_port,
-            }
+            extra = self._status_extra()
             await asyncio.get_running_loop().run_in_executor(None, lambda e=extra: self.ctrl.flush_status(e))
 
     async def command_loop(self):
@@ -379,16 +374,7 @@ class LiveGateway:
                     'switch': rec.get('switch'),
                 }
                 self._log('BLOCK', ip, rec.get('reason', 'Apply SDN'))
-                extra = {
-                    'served': self.served,
-                    'discarded': self.discarded,
-                    'failed_upstream': self.failed_upstream,
-                    'last_prediction': self.last_prediction,
-                    'app_health': self.health,
-                    'protected_app': self.upstream,
-                    'listen_port': self.listen_port,
-                    'sdn_applied': True,
-                }
+                extra = {**self._status_extra(), 'sdn_applied': True}
                 await asyncio.get_running_loop().run_in_executor(None, lambda: self.ctrl.flush_status(extra))
             elif op == 'revoke' and ip:
                 self.ctrl.backend.revoke(ip)

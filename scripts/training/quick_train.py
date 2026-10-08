@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 
 # Add project root to path
-project_root = Path(__file__).parent.parent.parent.parent
+project_root = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(project_root))
 
 
@@ -24,6 +24,7 @@ logger = logging.getLogger(__name__)
 sys.path.insert(0, str(Path(__file__).parent))
 
 from projects.shared_libs import CNNBiLSTMModel, ModelTrainer, ModelEvaluator
+from scripts.data.load_cicddos import load_temporal_splits
 
 # Check for processed data
 PROCESSED_DIR = Path("./data/processed")
@@ -48,14 +49,13 @@ def list_available_datasets():
     return processed_files
 
 
-def load_and_train(dataset_file):
-    """Load preprocessed data and train model"""
+def load_and_train(dataset_file=None):
+    """Load real 1-second windows and train the model."""
     logger.info("="*70)
-    logger.info(f"Loading: {dataset_file.name}")
+    logger.info("Loading leak-free temporal windows")
     logger.info("="*70)
     
-    # Load data
-    data = np.load(dataset_file)
+    data = load_temporal_splits()
     X_train = data['X_train']
     y_train = data['y_train']
     X_val = data['X_val']
@@ -74,7 +74,7 @@ def load_and_train(dataset_file):
     
     model = CNNBiLSTMModel(
         input_shape=X_train.shape[1:],  # (timesteps, features)
-        num_classes=len(np.unique(y_train)),
+        num_classes=int(np.max(y_train)) + 1,
         cnn_filters=(64, 128),
         lstm_units=(64, 32),
         dropout_rate=0.5
@@ -92,7 +92,7 @@ def load_and_train(dataset_file):
     # Compute class weights for imbalanced data
     class_weights = ModelEvaluator.compute_class_weights(
         y_train,
-        len(np.unique(y_train))
+        int(np.max(y_train)) + 1
     )
     
     history = trainer.train(
@@ -115,7 +115,7 @@ def load_and_train(dataset_file):
     detailed = ModelEvaluator.compute_metrics(
         y_test,
         predictions,
-        len(np.unique(y_train))
+        int(np.max(y_train)) + 1
     )
     
     logger.info("\n" + "="*70)
@@ -134,21 +134,7 @@ def main():
     logger.info("Quick Train - DDoS Detection Model")
     logger.info("🎯"*35 + "\n")
     
-    # List available datasets
-    datasets = list_available_datasets()
-    
-    if not datasets:
-        return 1
-    
-    # Choose dataset
-    if len(datasets) == 1:
-        choice = 0
-        logger.info(f"\nAuto-selecting: {datasets[0].name}")
-    else:
-        choice = int(input("\nChoose dataset (number): ").strip()) - 1
-    
-    # Load and train
-    model, history, metrics = load_and_train(datasets[choice])
+    model, history, metrics = load_and_train()
     
     logger.info("\n" + "✅"*35)
     logger.info("TRAINING COMPLETE!")

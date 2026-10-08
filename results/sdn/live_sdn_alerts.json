@@ -1,12 +1,12 @@
 [
   {
-    "source_ip": "127.0.0.1",
+    "source_ip": "127.0.0.2",
     "attack_class": "DrDoS_NTP",
-    "attack_score": 0.834,
-    "benign_prob": 0.166,
-    "pps": 57.0,
-    "action": "rate_limit",
-    "reason": "Suspicious (0.83) \u2014 rate-limit first",
-    "timestamp": "2026-09-21T12:35:23.321843Z"
+    "attack_score": 0.8354,
+    "benign_prob": 0.1646,
+    "pps": 77.0,
+    "action": "block",
+    "reason": "Suspicious (0.84) \u2014 block (lab discard, not rate-limit)",
+    "timestamp": "2026-09-28T10:39:14.689135Z"
   }
 ]
